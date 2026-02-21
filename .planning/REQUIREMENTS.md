@@ -21,7 +21,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **BODY-03**: Dynamic body type (affected by forces, gravity, collisions)
 - [x] **BODY-04**: Kinematic body type (user-controlled velocity, not affected by forces)
 - [x] **BODY-05**: Semi-implicit Euler integration for position and rotation updates
-- [ ] **BODY-06**: Fixed timestep simulation loop with accumulator pattern and interpolation
+- [x] **BODY-06**: Fixed timestep simulation loop with accumulator pattern and interpolation
 - [x] **BODY-07**: User can apply force at arbitrary world point (creating torque)
 - [x] **BODY-08**: User can apply impulse at arbitrary world point (instant velocity change)
 - [x] **BODY-09**: Per-shape material properties: density (derives mass from area), friction coefficient, restitution (0-1)
@@ -133,7 +133,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BODY-03 | Phase 1 | Complete |
 | BODY-04 | Phase 1 | Complete |
 | BODY-05 | Phase 1 | Complete |
-| BODY-06 | Phase 3 | Pending |
+| BODY-06 | Phase 3 | Complete |
 | BODY-07 | Phase 1 | Complete |
 | BODY-08 | Phase 1 | Complete |
 | BODY-09 | Phase 1 | Complete |
