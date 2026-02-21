@@ -124,13 +124,54 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| MATH-01 | Phase 1 | Pending |
+| MATH-02 | Phase 1 | Pending |
+| MATH-03 | Phase 1 | Pending |
+| MATH-04 | Phase 1 | Pending |
+| BODY-01 | Phase 1 | Pending |
+| BODY-02 | Phase 1 | Pending |
+| BODY-03 | Phase 1 | Pending |
+| BODY-04 | Phase 1 | Pending |
+| BODY-05 | Phase 1 | Pending |
+| BODY-06 | Phase 3 | Pending |
+| BODY-07 | Phase 1 | Pending |
+| BODY-08 | Phase 1 | Pending |
+| BODY-09 | Phase 1 | Pending |
+| BODY-10 | Phase 1 | Pending |
+| SHAP-01 | Phase 1 | Pending |
+| SHAP-02 | Phase 1 | Pending |
+| SHAP-03 | Phase 1 | Pending |
+| COLL-01 | Phase 2 | Pending |
+| COLL-02 | Phase 2 | Pending |
+| COLL-03 | Phase 2 | Pending |
+| COLL-04 | Phase 2 | Pending |
+| COLL-05 | Phase 2 | Pending |
+| COLL-06 | Phase 2 | Pending |
+| EVNT-01 | Phase 2 | Pending |
+| EVNT-02 | Phase 2 | Pending |
+| SOLV-01 | Phase 3 | Pending |
+| SOLV-02 | Phase 3 | Pending |
+| SOLV-03 | Phase 3 | Pending |
+| SOLV-04 | Phase 3 | Pending |
+| SOLV-05 | Phase 3 | Pending |
+| SOLV-06 | Phase 3 | Pending |
+| CONS-01 | Phase 4 | Pending |
+| CONS-02 | Phase 4 | Pending |
+| CONS-03 | Phase 4 | Pending |
+| CONS-04 | Phase 4 | Pending |
+| RNDR-01 | Phase 5 | Pending |
+| RNDR-02 | Phase 5 | Pending |
+| RNDR-03 | Phase 5 | Pending |
+| DEMO-01 | Phase 6 | Pending |
+| DEMO-02 | Phase 6 | Pending |
+| DEMO-03 | Phase 6 | Pending |
+| DEMO-04 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 33 total
-- Mapped to phases: 0
-- Unmapped: 33
+- v1 requirements: 42 total
+- Mapped to phases: 42
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-21*
-*Last updated: 2026-02-21 after initial definition*
+*Last updated: 2026-02-21 after roadmap creation*
