@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Math & Foundation
 
-- [ ] **MATH-01**: Vec2 class with add, sub, scale, dot, cross, normalize, length, rotate, perpendicular operations
-- [ ] **MATH-02**: Mat2 class for 2D rotation matrices
-- [ ] **MATH-03**: AABB (axis-aligned bounding box) with overlap test and combine operations
-- [ ] **MATH-04**: Common math utilities (clamp, lerp, approximately-equal with epsilon)
+- [x] **MATH-01**: Vec2 class with add, sub, scale, dot, cross, normalize, length, rotate, perpendicular operations
+- [x] **MATH-02**: Mat2 class for 2D rotation matrices
+- [x] **MATH-03**: AABB (axis-aligned bounding box) with overlap test and combine operations
+- [x] **MATH-04**: Common math utilities (clamp, lerp, approximately-equal with epsilon)
 
 ### Body Simulation
 
@@ -124,10 +124,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MATH-01 | Phase 1 | Pending |
-| MATH-02 | Phase 1 | Pending |
-| MATH-03 | Phase 1 | Pending |
-| MATH-04 | Phase 1 | Pending |
+| MATH-01 | Phase 1 | Complete |
+| MATH-02 | Phase 1 | Complete |
+| MATH-03 | Phase 1 | Complete |
+| MATH-04 | Phase 1 | Complete |
 | BODY-01 | Phase 1 | Pending |
 | BODY-02 | Phase 1 | Pending |
 | BODY-03 | Phase 1 | Pending |
