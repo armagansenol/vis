@@ -21,6 +21,12 @@ export interface BodyOptions {
   gravityScale?: number;
   /** The shape attached to this body. Required. */
   shape: Circle | Polygon;
+  /** If true, this body detects overlaps but does not resolve collisions. Default: false. */
+  isSensor?: boolean;
+  /** Collision category bitmask. Default: 0x0001. */
+  categoryBits?: number;
+  /** Collision mask bitmask — which categories this body collides with. Default: 0xFFFF. */
+  maskBits?: number;
 }
 
 /**
@@ -31,6 +37,11 @@ export interface BodyOptions {
  * (see {@link integrate}).
  */
 export class Body {
+  private static nextId = 0;
+
+  /** Unique auto-incrementing identifier for this body. */
+  id: number;
+
   type: BodyType;
   position: Vec2;
   angle: number;
@@ -53,7 +64,20 @@ export class Body {
   /** The shape attached to this body. */
   shape: Circle | Polygon;
 
+  /** If true, detects overlaps but does not resolve collisions. */
+  isSensor: boolean;
+  /** Collision category bitmask. */
+  categoryBits: number;
+  /** Collision mask bitmask — which categories this body collides with. */
+  maskBits: number;
+
+  /** Reset the auto-incrementing ID counter. Use in tests for deterministic IDs. */
+  static resetIdCounter(): void {
+    Body.nextId = 0;
+  }
+
   constructor(options: BodyOptions) {
+    this.id = Body.nextId++;
     this.type = options.type ?? BodyType.Dynamic;
     this.position = options.position?.clone() ?? Vec2.zero();
     this.angle = options.angle ?? 0;
@@ -61,6 +85,9 @@ export class Body {
     this.angularVelocity = options.angularVelocity ?? 0;
     this.gravityScale = options.gravityScale ?? 1;
     this.shape = options.shape;
+    this.isSensor = options.isSensor ?? false;
+    this.categoryBits = options.categoryBits ?? 0x0001;
+    this.maskBits = options.maskBits ?? 0xFFFF;
 
     this.force = Vec2.zero();
     this.torque = 0;
