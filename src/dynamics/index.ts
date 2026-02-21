@@ -1,1 +1,2 @@
-// Dynamics module barrel export — populated in plan 01-03
+export { BodyType } from './BodyType.js';
+export { Body, type BodyOptions } from './Body.js';
