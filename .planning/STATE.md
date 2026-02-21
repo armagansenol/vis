@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 ## Current Position
 
 Phase: 2 of 6 (Collision Detection)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: Executing Phase 2
-Last activity: 2026-02-21 — Completed 02-01-PLAN.md
+Last activity: 2026-02-21 — Completed 02-02-PLAN.md
 
-Progress: [███░░░░░░░] 29%
+Progress: [████░░░░░░] 36%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 3.75min
-- Total execution time: 15min
+- Total plans completed: 5
+- Average duration: 4min
+- Total execution time: 20min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [███░░░░░░░] 29%
 | Phase 01 P02 | 3min | 2 tasks | 7 files |
 | Phase 01 P03 | 3min | 2 tasks | 5 files |
 | Phase 02 P01 | 5min | 2 tasks | 7 files |
+| Phase 02 P02 | 5min | 2 tasks | 6 files |
 
 **Recent Trend:**
-- Last 5 plans: 4min, 3min, 3min, 5min
+- Last 5 plans: 4min, 3min, 3min, 5min, 5min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -60,6 +61,11 @@ Recent decisions affecting current work:
 - Force accumulators cleared after each integrate() call
 - Self-pair rejection in SpatialHash.queryPairs to handle hash key collisions between different cell coordinates
 - String-based pair deduplication with ordered ID keys (min:max) in spatial hash
+- Normal convention: always points from bodyA toward bodyB across all narrowphase algorithms
+- Voronoi region approach for circle-polygon collision (vertex, edge, interior cases)
+- Sutherland-Hodgman clipping for polygon contact points (up to 2 per collision)
+- Feature IDs encode (refEdgeIndex << 8 | incidentVertexIndex) for warm-starting
+- Material mixing: geometric mean for friction, max for restitution
 
 ### Pending Todos
 
@@ -72,5 +78,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 02-01-PLAN.md (Collision Infrastructure -- broadphase + filter)
-Resume file: .planning/phases/02-collision-detection/02-01-SUMMARY.md
+Stopped at: Completed 02-02-PLAN.md (Narrowphase collision detection -- SAT, circle-circle, circle-polygon)
+Resume file: .planning/phases/02-collision-detection/02-02-SUMMARY.md
