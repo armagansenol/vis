@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ManifoldMap } from '../../src/collision/ManifoldMap.js';
 import { type Manifold, type ContactPoint } from '../../src/collision/Manifold.js';
 import { Body } from '../../src/dynamics/Body.js';

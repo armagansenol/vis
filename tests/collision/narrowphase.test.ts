@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { Vec2 } from '../../src/math/Vec2.js';
 import { Body } from '../../src/dynamics/Body.js';
 import { Circle } from '../../src/shapes/Circle.js';

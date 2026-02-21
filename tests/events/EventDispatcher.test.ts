@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { EventDispatcher, type ContactEvent } from '../../src/events/EventDispatcher.js';
 import { Body } from '../../src/dynamics/Body.js';
 import { Circle } from '../../src/shapes/Circle.js';
