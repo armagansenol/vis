@@ -16,6 +16,10 @@ export interface ContactPoint {
    * across frames when the same geometric features are in contact.
    */
   id: number;
+  /** Accumulated normal impulse from solver (warm-starting). Default 0. */
+  normalImpulse: number;
+  /** Accumulated tangent impulse from solver (warm-starting). Default 0. */
+  tangentImpulse: number;
 }
 
 /**

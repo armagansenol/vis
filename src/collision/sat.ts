@@ -255,6 +255,8 @@ export function polygonVsPolygon(
         point: clipped[i],
         depth: -depth,
         id: (refEdgeIdx << 8) | (incVertIdx % incVerts.length),
+        normalImpulse: 0,
+        tangentImpulse: 0,
       });
     }
   }
