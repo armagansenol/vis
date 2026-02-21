@@ -65,12 +65,11 @@ Plans:
   3. A stack of 5+ boxes on a static ground settles and remains stable (warm starting and accumulated impulse clamping working)
   4. The simulation produces identical results regardless of rendering frame rate (fixed timestep with accumulator pattern)
   5. Penetrating bodies are pushed apart over time without visible jitter (Baumgarte position correction)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — Sequential impulse contact solver (TDD: preStep/solve/postStep, warm-starting, Baumgarte, Coulomb friction)
+- [ ] 03-02-PLAN.md — World class with fixed-timestep accumulator, body management, integration tests
 
 ### Phase 4: Constraints
 **Goal**: Bodies can be connected with joints and springs that the solver enforces alongside contact constraints
@@ -124,8 +123,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-02-21 |
-| 2. Collision Detection | 1/3 | In Progress|  |
-| 3. Solver and Engine Loop | 0/3 | Not started | - |
+| 2. Collision Detection | 3/3 | Complete | 2026-02-21 |
+| 3. Solver and Engine Loop | 0/2 | Not started | - |
 | 4. Constraints | 0/2 | Not started | - |
 | 5. Renderer | 0/1 | Not started | - |
 | 6. Demo Scenes | 0/2 | Not started | - |
