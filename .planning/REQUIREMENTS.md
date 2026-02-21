@@ -24,14 +24,14 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **BODY-06**: Fixed timestep simulation loop with accumulator pattern and interpolation
 - [ ] **BODY-07**: User can apply force at arbitrary world point (creating torque)
 - [ ] **BODY-08**: User can apply impulse at arbitrary world point (instant velocity change)
-- [ ] **BODY-09**: Per-shape material properties: density (derives mass from area), friction coefficient, restitution (0-1)
+- [x] **BODY-09**: Per-shape material properties: density (derives mass from area), friction coefficient, restitution (0-1)
 - [ ] **BODY-10**: Gravity as global acceleration with per-body gravity scale override
 
 ### Shapes
 
-- [ ] **SHAP-01**: Circle shape with radius, center offset, and area/inertia computation
-- [ ] **SHAP-02**: Box/rectangle shape as a special case of convex polygon
-- [ ] **SHAP-03**: Convex polygon shape with vertex winding, support function, area/inertia computation
+- [x] **SHAP-01**: Circle shape with radius, center offset, and area/inertia computation
+- [x] **SHAP-02**: Box/rectangle shape as a special case of convex polygon
+- [x] **SHAP-03**: Convex polygon shape with vertex winding, support function, area/inertia computation
 
 ### Collision Detection
 
@@ -136,11 +136,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BODY-06 | Phase 3 | Pending |
 | BODY-07 | Phase 1 | Pending |
 | BODY-08 | Phase 1 | Pending |
-| BODY-09 | Phase 1 | Pending |
+| BODY-09 | Phase 1 | Complete |
 | BODY-10 | Phase 1 | Pending |
-| SHAP-01 | Phase 1 | Pending |
-| SHAP-02 | Phase 1 | Pending |
-| SHAP-03 | Phase 1 | Pending |
+| SHAP-01 | Phase 1 | Complete |
+| SHAP-02 | Phase 1 | Complete |
+| SHAP-03 | Phase 1 | Complete |
 | COLL-01 | Phase 2 | Pending |
 | COLL-02 | Phase 2 | Pending |
 | COLL-03 | Phase 2 | Pending |
