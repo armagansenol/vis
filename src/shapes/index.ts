@@ -1,1 +1,11 @@
-// Shapes module barrel export — populated in plan 01-02
+export {
+  ShapeType,
+  DEFAULT_DENSITY,
+  DEFAULT_FRICTION,
+  DEFAULT_RESTITUTION,
+  type Material,
+  type MassData,
+  type Shape,
+} from './Shape.js';
+export { Circle, type CircleOptions } from './Circle.js';
+export { Polygon, type PolygonOptions } from './Polygon.js';
