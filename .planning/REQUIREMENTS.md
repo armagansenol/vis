@@ -16,16 +16,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Body Simulation
 
-- [ ] **BODY-01**: Rigid body with position, velocity, angular velocity, mass, inertia, and inverse mass/inertia
-- [ ] **BODY-02**: Static body type (infinite mass, zero velocity, participates in collision)
-- [ ] **BODY-03**: Dynamic body type (affected by forces, gravity, collisions)
-- [ ] **BODY-04**: Kinematic body type (user-controlled velocity, not affected by forces)
-- [ ] **BODY-05**: Semi-implicit Euler integration for position and rotation updates
+- [x] **BODY-01**: Rigid body with position, velocity, angular velocity, mass, inertia, and inverse mass/inertia
+- [x] **BODY-02**: Static body type (infinite mass, zero velocity, participates in collision)
+- [x] **BODY-03**: Dynamic body type (affected by forces, gravity, collisions)
+- [x] **BODY-04**: Kinematic body type (user-controlled velocity, not affected by forces)
+- [x] **BODY-05**: Semi-implicit Euler integration for position and rotation updates
 - [ ] **BODY-06**: Fixed timestep simulation loop with accumulator pattern and interpolation
-- [ ] **BODY-07**: User can apply force at arbitrary world point (creating torque)
-- [ ] **BODY-08**: User can apply impulse at arbitrary world point (instant velocity change)
+- [x] **BODY-07**: User can apply force at arbitrary world point (creating torque)
+- [x] **BODY-08**: User can apply impulse at arbitrary world point (instant velocity change)
 - [x] **BODY-09**: Per-shape material properties: density (derives mass from area), friction coefficient, restitution (0-1)
-- [ ] **BODY-10**: Gravity as global acceleration with per-body gravity scale override
+- [x] **BODY-10**: Gravity as global acceleration with per-body gravity scale override
 
 ### Shapes
 
@@ -128,16 +128,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MATH-02 | Phase 1 | Complete |
 | MATH-03 | Phase 1 | Complete |
 | MATH-04 | Phase 1 | Complete |
-| BODY-01 | Phase 1 | Pending |
-| BODY-02 | Phase 1 | Pending |
-| BODY-03 | Phase 1 | Pending |
-| BODY-04 | Phase 1 | Pending |
-| BODY-05 | Phase 1 | Pending |
+| BODY-01 | Phase 1 | Complete |
+| BODY-02 | Phase 1 | Complete |
+| BODY-03 | Phase 1 | Complete |
+| BODY-04 | Phase 1 | Complete |
+| BODY-05 | Phase 1 | Complete |
 | BODY-06 | Phase 3 | Pending |
-| BODY-07 | Phase 1 | Pending |
-| BODY-08 | Phase 1 | Pending |
+| BODY-07 | Phase 1 | Complete |
+| BODY-08 | Phase 1 | Complete |
 | BODY-09 | Phase 1 | Complete |
-| BODY-10 | Phase 1 | Pending |
+| BODY-10 | Phase 1 | Complete |
 | SHAP-01 | Phase 1 | Complete |
 | SHAP-02 | Phase 1 | Complete |
 | SHAP-03 | Phase 1 | Complete |

@@ -12,7 +12,7 @@ Build a 2D rigid body physics engine bottom-up, from math primitives through col
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Math primitives, shape geometry, and rigid body representation
+- [x] **Phase 1: Foundation** - Math primitives, shape geometry, and rigid body representation
 - [ ] **Phase 2: Collision Detection** - Broadphase, narrowphase, contact manifolds, and collision events
 - [ ] **Phase 3: Solver and Engine Loop** - Sequential impulses solver with warm starting, fixed-timestep simulation loop
 - [ ] **Phase 4: Constraints** - Distance joints, springs, revolute joints, and mouse constraint
@@ -34,9 +34,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Project scaffolding + math primitives (Vec2, Mat2, AABB, utils)
-- [ ] 01-02-PLAN.md — Shape geometry (Circle, Convex Polygon, Box factory, materials)
-- [ ] 01-03-PLAN.md — Rigid body, integration, forces/impulses, barrel exports
+- [x] 01-01-PLAN.md — Project scaffolding + math primitives (Vec2, Mat2, AABB, utils)
+- [x] 01-02-PLAN.md — Shape geometry (Circle, Convex Polygon, Box factory, materials)
+- [x] 01-03-PLAN.md — Rigid body, integration, forces/impulses, barrel exports
 
 ### Phase 2: Collision Detection
 **Goal**: The engine detects all collisions between bodies, produces accurate contact data, and fires contact events
@@ -123,7 +123,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Not started | - |
+| 1. Foundation | 3/3 | Complete | 2026-02-21 |
 | 2. Collision Detection | 0/3 | Not started | - |
 | 3. Solver and Engine Loop | 0/3 | Not started | - |
 | 4. Constraints | 0/2 | Not started | - |
