@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-02-21 |
-| 2. Collision Detection | 0/3 | Not started | - |
+| 2. Collision Detection | 1/3 | In Progress|  |
 | 3. Solver and Engine Loop | 0/3 | Not started | - |
 | 4. Constraints | 0/2 | Not started | - |
 | 5. Renderer | 0/1 | Not started | - |

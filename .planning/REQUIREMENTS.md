@@ -35,12 +35,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Collision Detection
 
-- [ ] **COLL-01**: AABB broadphase using spatial hash grid producing candidate pairs
+- [x] **COLL-01**: AABB broadphase using spatial hash grid producing candidate pairs
 - [ ] **COLL-02**: SAT narrowphase for polygon-polygon collision with minimum penetration axis
 - [ ] **COLL-03**: Circle-circle collision detection (fast path)
 - [ ] **COLL-04**: Circle-polygon collision detection
 - [ ] **COLL-05**: Contact manifold generation with contact points, normal, and penetration depth
-- [ ] **COLL-06**: Collision filtering via category/mask bitmask (body A collides with B if categories & masks match)
+- [x] **COLL-06**: Collision filtering via category/mask bitmask (body A collides with B if categories & masks match)
 
 ### Solver
 
@@ -141,12 +141,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHAP-01 | Phase 1 | Complete |
 | SHAP-02 | Phase 1 | Complete |
 | SHAP-03 | Phase 1 | Complete |
-| COLL-01 | Phase 2 | Pending |
+| COLL-01 | Phase 2 | Complete |
 | COLL-02 | Phase 2 | Pending |
 | COLL-03 | Phase 2 | Pending |
 | COLL-04 | Phase 2 | Pending |
 | COLL-05 | Phase 2 | Pending |
-| COLL-06 | Phase 2 | Pending |
+| COLL-06 | Phase 2 | Complete |
 | EVNT-01 | Phase 2 | Pending |
 | EVNT-02 | Phase 2 | Pending |
 | SOLV-01 | Phase 3 | Pending |

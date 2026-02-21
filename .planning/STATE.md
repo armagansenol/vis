@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** A correct, performant rigid body physics simulation that you fully understand and control because you built every line of it.
-**Current focus:** Phase 1: Foundation
+**Current focus:** Phase 2: Collision Detection
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation)
-Plan: 3 of 3 in current phase (PHASE COMPLETE)
-Status: Phase 1 Complete
-Last activity: 2026-02-21 — Completed 01-03-PLAN.md
+Phase: 2 of 6 (Collision Detection)
+Plan: 1 of 3 in current phase
+Status: Executing Phase 2
+Last activity: 2026-02-21 — Completed 02-01-PLAN.md
 
-Progress: [██░░░░░░░░] 21%
+Progress: [███░░░░░░░] 29%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3.3min
-- Total execution time: 10min
+- Total plans completed: 4
+- Average duration: 3.75min
+- Total execution time: 15min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [██░░░░░░░░] 21%
 | Phase 01 P01 | 4min | 2 tasks | 14 files |
 | Phase 01 P02 | 3min | 2 tasks | 7 files |
 | Phase 01 P03 | 3min | 2 tasks | 5 files |
+| Phase 02 P01 | 5min | 2 tasks | 7 files |
 
 **Recent Trend:**
-- Last 5 plans: 4min, 3min, 3min
+- Last 5 plans: 4min, 3min, 3min, 5min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -57,6 +58,8 @@ Recent decisions affecting current work:
 - Body stores both mass and invMass; static/kinematic use invMass=0 for natural force immunity
 - Semi-implicit Euler: velocity before position for energy conservation
 - Force accumulators cleared after each integrate() call
+- Self-pair rejection in SpatialHash.queryPairs to handle hash key collisions between different cell coordinates
+- String-based pair deduplication with ordered ID keys (min:max) in spatial hash
 
 ### Pending Todos
 
@@ -69,5 +72,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 01-03-PLAN.md (Rigid Body + Integration -- Phase 1 complete)
-Resume file: .planning/phases/01-foundation/01-03-SUMMARY.md
+Stopped at: Completed 02-01-PLAN.md (Collision Infrastructure -- broadphase + filter)
+Resume file: .planning/phases/02-collision-detection/02-01-SUMMARY.md
