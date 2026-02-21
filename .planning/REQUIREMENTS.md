@@ -44,12 +44,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Solver
 
-- [ ] **SOLV-01**: Sequential impulses (iterative PGS) velocity solver with configurable iteration count
-- [ ] **SOLV-02**: Normal impulse resolution with restitution (bounciness)
-- [ ] **SOLV-03**: Tangential friction impulse with Coulomb friction model
-- [ ] **SOLV-04**: Position correction via Baumgarte stabilization to resolve penetration
-- [ ] **SOLV-05**: Accumulated impulse clamping (not per-iteration clamping)
-- [ ] **SOLV-06**: Warm starting — cache and reapply impulses from previous frame via contact persistence
+- [x] **SOLV-01**: Sequential impulses (iterative PGS) velocity solver with configurable iteration count
+- [x] **SOLV-02**: Normal impulse resolution with restitution (bounciness)
+- [x] **SOLV-03**: Tangential friction impulse with Coulomb friction model
+- [x] **SOLV-04**: Position correction via Baumgarte stabilization to resolve penetration
+- [x] **SOLV-05**: Accumulated impulse clamping (not per-iteration clamping)
+- [x] **SOLV-06**: Warm starting — cache and reapply impulses from previous frame via contact persistence
 
 ### Constraints
 
@@ -149,12 +149,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COLL-06 | Phase 2 | Complete |
 | EVNT-01 | Phase 2 | Complete |
 | EVNT-02 | Phase 2 | Complete |
-| SOLV-01 | Phase 3 | Pending |
-| SOLV-02 | Phase 3 | Pending |
-| SOLV-03 | Phase 3 | Pending |
-| SOLV-04 | Phase 3 | Pending |
-| SOLV-05 | Phase 3 | Pending |
-| SOLV-06 | Phase 3 | Pending |
+| SOLV-01 | Phase 3 | Complete |
+| SOLV-02 | Phase 3 | Complete |
+| SOLV-03 | Phase 3 | Complete |
+| SOLV-04 | Phase 3 | Complete |
+| SOLV-05 | Phase 3 | Complete |
+| SOLV-06 | Phase 3 | Complete |
 | CONS-01 | Phase 4 | Pending |
 | CONS-02 | Phase 4 | Pending |
 | CONS-03 | Phase 4 | Pending |

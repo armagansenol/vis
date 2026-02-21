@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** A correct, performant rigid body physics simulation that you fully understand and control because you built every line of it.
-**Current focus:** Phase 2: Collision Detection
+**Current focus:** Phase 3: Solver and Engine Loop
 
 ## Current Position
 
-Phase: 2 of 6 (Collision Detection) -- COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 2 Complete, ready for Phase 3
-Last activity: 2026-02-21 — Completed 02-03-PLAN.md
+Phase: 3 of 6 (Solver and Engine Loop)
+Plan: 1 of 2 in current phase
+Status: Executing Phase 3
+Last activity: 2026-02-21 — Completed 03-01-PLAN.md
 
-Progress: [████░░░░░░] 43%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 4min
-- Total execution time: 24min
+- Total execution time: 28min
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: [████░░░░░░] 43%
 | Phase 02 P01 | 5min | 2 tasks | 7 files |
 | Phase 02 P02 | 5min | 2 tasks | 6 files |
 | Phase 02 P03 | 4min | 2 tasks | 12 files |
+| Phase 03 P01 | 4min | 2 tasks | 4 files |
 
 **Recent Trend:**
-- Last 5 plans: 3min, 3min, 5min, 5min, 4min
+- Last 5 plans: 3min, 5min, 5min, 4min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - ContactPoint extended with normalImpulse/tangentImpulse (default 0) for solver warm-starting
 - Warm-start transfer matches contacts by feature ID within persisting manifolds
 - Pair exclusion set on CollisionSystem for Phase 4 joint forward-compatibility
+- Box2D impulse formula: lambda = normalMass * (-vn + bias) with positive bias for Baumgarte and restitution
+- Compute restitution velocity BEFORE warm-start application in preStep
+- Inline x/y arithmetic in solve() hot loop to avoid GC pressure
 
 ### Pending Todos
 
@@ -82,5 +86,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 02-03-PLAN.md (Collision pipeline, ManifoldMap persistence, EventDispatcher -- Phase 2 complete)
-Resume file: .planning/phases/02-collision-detection/02-03-SUMMARY.md
+Stopped at: Completed 03-01-PLAN.md (Sequential impulse contact solver with normal/friction, warm-starting, Baumgarte)
+Resume file: .planning/phases/03-solver-and-engine-loop/03-01-SUMMARY.md
