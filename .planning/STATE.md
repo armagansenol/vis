@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 
 ## Current Position
 
-Phase: 2 of 6 (Collision Detection)
-Plan: 2 of 3 in current phase
-Status: Executing Phase 2
-Last activity: 2026-02-21 — Completed 02-02-PLAN.md
+Phase: 2 of 6 (Collision Detection) -- COMPLETE
+Plan: 3 of 3 in current phase
+Status: Phase 2 Complete, ready for Phase 3
+Last activity: 2026-02-21 — Completed 02-03-PLAN.md
 
-Progress: [████░░░░░░] 36%
+Progress: [████░░░░░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 4min
-- Total execution time: 20min
+- Total execution time: 24min
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: [████░░░░░░] 36%
 | Phase 01 P03 | 3min | 2 tasks | 5 files |
 | Phase 02 P01 | 5min | 2 tasks | 7 files |
 | Phase 02 P02 | 5min | 2 tasks | 6 files |
+| Phase 02 P03 | 4min | 2 tasks | 12 files |
 
 **Recent Trend:**
-- Last 5 plans: 4min, 3min, 3min, 5min, 5min
+- Last 5 plans: 3min, 3min, 5min, 5min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - Sutherland-Hodgman clipping for polygon contact points (up to 2 per collision)
 - Feature IDs encode (refEdgeIndex << 8 | incidentVertexIndex) for warm-starting
 - Material mixing: geometric mean for friction, max for restitution
+- ContactPoint extended with normalImpulse/tangentImpulse (default 0) for solver warm-starting
+- Warm-start transfer matches contacts by feature ID within persisting manifolds
+- Pair exclusion set on CollisionSystem for Phase 4 joint forward-compatibility
 
 ### Pending Todos
 
@@ -78,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 02-02-PLAN.md (Narrowphase collision detection -- SAT, circle-circle, circle-polygon)
-Resume file: .planning/phases/02-collision-detection/02-02-SUMMARY.md
+Stopped at: Completed 02-03-PLAN.md (Collision pipeline, ManifoldMap persistence, EventDispatcher -- Phase 2 complete)
+Resume file: .planning/phases/02-collision-detection/02-03-SUMMARY.md

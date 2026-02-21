@@ -60,8 +60,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Events
 
-- [ ] **EVNT-01**: beginContact event fired when two bodies start colliding (with body refs and contact data)
-- [ ] **EVNT-02**: endContact event fired when two bodies stop colliding
+- [x] **EVNT-01**: beginContact event fired when two bodies start colliding (with body refs and contact data)
+- [x] **EVNT-02**: endContact event fired when two bodies stop colliding
 
 ### Rendering
 
@@ -147,8 +147,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COLL-04 | Phase 2 | Complete |
 | COLL-05 | Phase 2 | Complete |
 | COLL-06 | Phase 2 | Complete |
-| EVNT-01 | Phase 2 | Pending |
-| EVNT-02 | Phase 2 | Pending |
+| EVNT-01 | Phase 2 | Complete |
+| EVNT-02 | Phase 2 | Complete |
 | SOLV-01 | Phase 3 | Pending |
 | SOLV-02 | Phase 3 | Pending |
 | SOLV-03 | Phase 3 | Pending |
