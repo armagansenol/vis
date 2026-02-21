@@ -12,3 +12,8 @@ export {
   mixMaterials,
   pairKey,
 } from './Manifold.js';
+export { ManifoldMap, type ManifoldUpdateResult } from './ManifoldMap.js';
+export {
+  CollisionSystem,
+  type CollisionSystemOptions,
+} from './CollisionSystem.js';
