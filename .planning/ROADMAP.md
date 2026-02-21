@@ -48,12 +48,12 @@ Plans:
   3. Circle-circle and circle-polygon collisions produce accurate contact points and normals
   4. Contact manifolds persist across frames (contact caching by body-pair ID) enabling warm starting in Phase 3
   5. beginContact and endContact events fire at the correct frames when collisions start and stop
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Body collision fields + spatial hash broadphase + collision filtering
+- [ ] 02-02-PLAN.md — Narrowphase algorithms (SAT, circle-circle, circle-polygon) + manifold data structures
+- [ ] 02-03-PLAN.md — ManifoldMap persistence + CollisionSystem orchestrator + event system
 
 ### Phase 3: Solver and Engine Loop
 **Goal**: Colliding bodies respond physically correct -- they bounce, slide with friction, and stack stably under the fixed-timestep simulation loop
