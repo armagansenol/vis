@@ -31,12 +31,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A dynamic body with gravity applied updates position and velocity correctly each integration step using semi-implicit Euler
   4. Applying a force at an off-center world point creates both linear acceleration and angular torque
   5. Static and kinematic bodies do not respond to forces or gravity; kinematic bodies move at user-set velocity
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md — Project scaffolding + math primitives (Vec2, Mat2, AABB, utils)
+- [ ] 01-02-PLAN.md — Shape geometry (Circle, Convex Polygon, Box factory, materials)
+- [ ] 01-03-PLAN.md — Rigid body, integration, forces/impulses, barrel exports
 
 ### Phase 2: Collision Detection
 **Goal**: The engine detects all collisions between bodies, produces accurate contact data, and fires contact events
