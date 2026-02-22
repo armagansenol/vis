@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** A correct, performant rigid body physics simulation that you fully understand and control because you built every line of it.
-**Current focus:** Phase 3: Solver and Engine Loop
+**Current focus:** Phase 4: Constraints
 
 ## Current Position
 
-Phase: 3 of 6 (Solver and Engine Loop) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase 3 Complete
-Last activity: 2026-02-21 — Completed 03-02-PLAN.md
+Phase: 4 of 6 (Constraints)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-22 — Completed 04-01-PLAN.md
 
-Progress: [██████░░░░] 57%
+Progress: [██████░░░░] 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 4min
-- Total execution time: 31min
+- Total execution time: 35min
 
 **By Phase:**
 
@@ -36,8 +36,10 @@ Progress: [██████░░░░] 57%
 | Phase 03 P01 | 4min | 2 tasks | 4 files |
 | Phase 03 P02 | 3min | 2 tasks | 5 files |
 
+| Phase 04 P01 | 4min | 2 tasks | 8 files |
+
 **Recent Trend:**
-- Last 5 plans: 5min, 5min, 4min, 4min, 3min
+- Last 5 plans: 5min, 4min, 4min, 3min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -76,6 +78,10 @@ Recent decisions affecting current work:
 - Compute restitution velocity BEFORE warm-start application in preStep
 - Inline x/y arithmetic in solve() hot loop to avoid GC pressure
 - [Phase 03]: World does inline velocity/position integration (not Body.integrate()) to allow solver between phases
+- [Phase 04]: Constraint interface with collideConnected property for uniform pair exclusion handling
+- [Phase 04]: Bilateral distance constraint (not rope) -- no clamping, maintains distance in both directions
+- [Phase 04]: Separate Distance and Spring classes rather than unified class with optional stiffness
+- [Phase 04]: Catto gamma/beta formulation for soft constraints with Nyquist frequency clamping
 
 ### Pending Todos
 
@@ -87,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 03-02-PLAN.md (World engine loop with fixed-timestep accumulator)
-Resume file: .planning/phases/03-solver-and-engine-loop/03-02-SUMMARY.md
+Last session: 2026-02-22
+Stopped at: Completed 04-01-PLAN.md (Constraint interface + distance and spring constraints)
+Resume file: .planning/phases/04-constraints/04-01-SUMMARY.md

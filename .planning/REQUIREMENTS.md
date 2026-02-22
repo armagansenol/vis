@@ -53,8 +53,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Constraints
 
-- [ ] **CONS-01**: Distance constraint — maintain fixed distance between two body anchor points
-- [ ] **CONS-02**: Spring constraint — elastic distance with configurable stiffness and damping
+- [x] **CONS-01**: Distance constraint — maintain fixed distance between two body anchor points
+- [x] **CONS-02**: Spring constraint — elastic distance with configurable stiffness and damping
 - [ ] **CONS-03**: Revolute/pin joint — two bodies share a hinge point, free rotation, optional angle limits
 - [ ] **CONS-04**: Mouse/pointer constraint — spring from body point to mouse position for interactive dragging
 
@@ -155,8 +155,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SOLV-04 | Phase 3 | Complete |
 | SOLV-05 | Phase 3 | Complete |
 | SOLV-06 | Phase 3 | Complete |
-| CONS-01 | Phase 4 | Pending |
-| CONS-02 | Phase 4 | Pending |
+| CONS-01 | Phase 4 | Complete |
+| CONS-02 | Phase 4 | Complete |
 | CONS-03 | Phase 4 | Pending |
 | CONS-04 | Phase 4 | Pending |
 | RNDR-01 | Phase 5 | Pending |
