@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 ## Current Position
 
 Phase: 5 of 6 (Renderer)
-Plan: 1 of N in current phase
+Plan: 2 of 2 in current phase
 Status: Ready
-Last activity: 2026-02-22 — Completed 04-02-PLAN.md (Phase 4 complete)
+Last activity: 2026-02-22 — Completed 05-01-PLAN.md (Core renderer with interpolation)
 
-Progress: [███████░░░] 73%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 4min
-- Total execution time: 39min
+- Total execution time: 43min
 
 **By Phase:**
 
@@ -39,9 +39,10 @@ Progress: [███████░░░] 73%
 | Phase 04 P01 | 4min | 2 tasks | 8 files |
 
 | Phase 04 P02 | 4min | 2 tasks | 5 files |
+| Phase 05 P01 | 4min | 2 tasks | 11 files |
 
 **Recent Trend:**
-- Last 5 plans: 4min, 4min, 3min, 4min, 4min
+- Last 5 plans: 4min, 3min, 4min, 4min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -88,6 +89,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Mouse constraint bodyA=bodyB=body for Constraint interface compatibility
 - [Phase 04]: Mouse maxForce defaults to 1000 * body.mass for sensible drag without manual tuning
 - [Phase 04]: 2x2 K matrix with Cramer's rule inline inverse for revolute/mouse point constraints
+- [Phase 05]: Static bodies skip interpolation (use current position directly)
+- [Phase 05]: darkenColor helper parses rgba and reduces brightness 30% for stroke outlines
 
 ### Pending Todos
 
@@ -100,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 04-02-PLAN.md (Phase 4 complete: all 4 constraint types)
-Resume file: .planning/phases/04-constraints/04-02-SUMMARY.md
+Stopped at: Completed 05-01-PLAN.md (Core renderer with body drawing, interpolation, rAF loop)
+Resume file: .planning/phases/05-renderer/05-01-SUMMARY.md

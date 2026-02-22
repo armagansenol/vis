@@ -97,7 +97,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Physics data plumbing + core Canvas 2D renderer with interpolation
+- [x] 05-01-PLAN.md — Physics data plumbing + core Canvas 2D renderer with interpolation
 - [ ] 05-02-PLAN.md — Debug overlays (AABBs, contacts, normals, constraints) + visual verification
 
 ### Phase 6: Demo Scenes
@@ -127,5 +127,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Collision Detection | 3/3 | Complete | 2026-02-21 |
 | 3. Solver and Engine Loop | 0/2 | Not started | - |
 | 4. Constraints | 0/2 | Not started | - |
-| 5. Renderer | 0/2 | Not started | - |
+| 5. Renderer | 1/2 | In progress | - |
 | 6. Demo Scenes | 0/2 | Not started | - |
