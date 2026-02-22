@@ -80,11 +80,11 @@ Plans:
   2. A spring constraint produces oscillating elastic behavior with configurable stiffness and damping
   3. A revolute joint allows free rotation around a shared hinge point and respects optional angle limits
   4. Dragging a body with the mouse constraint moves it smoothly with spring-like following behavior
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Constraint interface + DistanceConstraint + SpringConstraint + World integration
+- [ ] 04-02-PLAN.md — RevoluteConstraint (hinge with limits/motor) + MouseConstraint (interactive dragging)
 
 ### Phase 5: Renderer
 **Goal**: The physics simulation is visible on screen with smooth rendering and optional debug overlays
