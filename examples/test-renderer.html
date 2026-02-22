@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vis - Renderer + Debug Overlay Test</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #111;
+      font-family: monospace;
+      color: #ccc;
+    }
+    #wrapper {
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #333;
+    }
+    #controls {
+      margin-top: 10px;
+    }
+    button {
+      padding: 6px 14px;
+      margin: 0 4px;
+      cursor: pointer;
+      background: #333;
+      color: #eee;
+      border: 1px solid #555;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    button:hover {
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <div id="controls">
+      <button id="toggleDebug">Toggle Debug (ON)</button>
+      <button id="restart">Restart</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      Vec2,
+      Body,
+      BodyType,
+      Circle,
+      Polygon,
+      World,
+      Renderer,
+    } from '../src/index.ts';
+
+    function createScene() {
+      const canvas = document.getElementById('canvas');
+
+      // Create world with gravity pointing down
+      const world = new World({
+        gravity: new Vec2(0, -9.81),
+      });
+
+      // Static floor (wide box at y=0)
+      const floorShape = Polygon.box(16, 0.5);
+      const floor = new Body({
+        shape: floorShape,
+        type: BodyType.Static,
+        position: new Vec2(0, -0.25),
+      });
+      world.addBody(floor);
+
+      // Static left wall
+      const wallShape = Polygon.box(0.5, 8);
+      const leftWall = new Body({
+        shape: wallShape,
+        type: BodyType.Static,
+        position: new Vec2(-8, 4),
+      });
+      world.addBody(leftWall);
+
+      // Static right wall
+      const rightWall = new Body({
+        shape: wallShape,
+        type: BodyType.Static,
+        position: new Vec2(8, 4),
+      });
+      world.addBody(rightWall);
+
+      // Dynamic circle 1
+      const circle1 = new Body({
+        shape: new Circle(0.5),
+        position: new Vec2(-2, 6),
+      });
+      world.addBody(circle1);
+
+      // Dynamic circle 2
+      const circle2 = new Body({
+        shape: new Circle(0.7),
+        position: new Vec2(1, 8),
+      });
+      world.addBody(circle2);
+
+      // Dynamic box 1
+      const box1 = new Body({
+        shape: Polygon.box(1, 1),
+        position: new Vec2(0, 4),
+        angle: 0.3,
+      });
+      world.addBody(box1);
+
+      // Dynamic box 2
+      const box2 = new Body({
+        shape: Polygon.box(0.8, 1.2),
+        position: new Vec2(2, 5),
+        angle: -0.5,
+      });
+      world.addBody(box2);
+
+      // Dynamic triangle (regular polygon with 3 sides)
+      const tri = new Body({
+        shape: Polygon.regular(3, 0.6),
+        position: new Vec2(-1, 7),
+        angle: 0.1,
+      });
+      world.addBody(tri);
+
+      // Create renderer with debug ON
+      const renderer = new Renderer(canvas, world, {
+        scale: 50,
+        offsetY: 50,
+        debug: true,
+        background: '#1a1a2e',
+      });
+
+      renderer.start();
+
+      return renderer;
+    }
+
+    let renderer = createScene();
+    let debugOn = true;
+
+    document.getElementById('toggleDebug').addEventListener('click', () => {
+      debugOn = !debugOn;
+      renderer.setDebug(debugOn);
+      document.getElementById('toggleDebug').textContent =
+        `Toggle Debug (${debugOn ? 'ON' : 'OFF'})`;
+    });
+
+    document.getElementById('restart').addEventListener('click', () => {
+      renderer.stop();
+      renderer = createScene();
+      debugOn = true;
+      document.getElementById('toggleDebug').textContent = 'Toggle Debug (ON)';
+    });
+  </script>
+</body>
+</html>
