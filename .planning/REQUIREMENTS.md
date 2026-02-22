@@ -71,8 +71,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Demos
 
-- [ ] **DEMO-01**: Stacking boxes demo — boxes stacked on a static ground, testing solver stability
-- [ ] **DEMO-02**: Bouncing balls demo — circles with varied restitution falling and bouncing
+- [x] **DEMO-01**: Stacking boxes demo — boxes stacked on a static ground, testing solver stability
+- [x] **DEMO-02**: Bouncing balls demo — circles with varied restitution falling and bouncing
 - [ ] **DEMO-03**: Newton's cradle demo — pendulum balls using distance constraints
 - [ ] **DEMO-04**: Ragdoll demo — linked body segments using revolute joints
 
@@ -162,8 +162,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RNDR-01 | Phase 5 | Complete |
 | RNDR-02 | Phase 5 | Complete |
 | RNDR-03 | Phase 5 | Complete |
-| DEMO-01 | Phase 6 | Pending |
-| DEMO-02 | Phase 6 | Pending |
+| DEMO-01 | Phase 6 | Complete |
+| DEMO-02 | Phase 6 | Complete |
 | DEMO-03 | Phase 6 | Pending |
 | DEMO-04 | Phase 6 | Pending |
 

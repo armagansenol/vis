@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 ## Current Position
 
 Phase: 6 of 6 (Demo Scenes)
-Plan: 1 of 2 in current phase
+Plan: 2 of 2 in current phase
 Status: Ready
-Last activity: 2026-02-22 — Completed 05-02-PLAN.md (Debug overlays + visual verification)
+Last activity: 2026-02-22 — Completed 06-01-PLAN.md (Demo page shell + first two scenes)
 
-Progress: [█████████░] 85%
+Progress: [██████████] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 4min
-- Total execution time: 45min
+- Total execution time: 49min
 
 **By Phase:**
 
@@ -42,9 +42,10 @@ Progress: [█████████░] 85%
 | Phase 05 P01 | 4min | 2 tasks | 11 files |
 
 | Phase 05 P02 | 2min | 2 tasks | 4 files |
+| Phase 06 P01 | 4min | 2 tasks | 4 files |
 
 **Recent Trend:**
-- Last 5 plans: 3min, 4min, 4min, 4min, 2min
+- Last 5 plans: 4min, 4min, 4min, 2min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -95,6 +96,9 @@ Recent decisions affecting current work:
 - [Phase 05]: darkenColor helper parses rgba and reduces brightness 30% for stroke outlines
 - [Phase 05]: DebugRenderer uses static methods (no instance state needed)
 - [Phase 05]: Line widths scale inversely with zoom (lineWidth = N / scale) for consistent visual size
+- [Phase 06]: Demo page runs own rAF loop (not Renderer.start()) for post-draw overlay control
+- [Phase 06]: Added World.gravity public getter for runtime parameter tweaking
+- [Phase 06]: Scene factory pattern: DemoScene { name, create, cleanup, tweaks } for lifecycle management
 
 ### Pending Todos
 
@@ -107,5 +111,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 05-02-PLAN.md (Debug overlays with AABB, contacts, normals, constraints)
-Resume file: .planning/phases/05-renderer/05-02-SUMMARY.md
+Stopped at: Completed 06-01-PLAN.md (Demo page shell + stacking boxes + bouncing balls)
+Resume file: .planning/phases/06-demo-scenes/06-01-SUMMARY.md
