@@ -232,8 +232,8 @@
       ShapeType,
     } from '../src/index.ts';
 
-    // Scene factory imports -- replaced in Task 2 with real implementations
-    // For now, stacking/bouncing use inline stubs alongside cradle/ragdoll stubs
+    import { stackingScene } from './demos/stacking.ts';
+    import { bouncingScene } from './demos/bouncing.ts';
 
     // -----------------------------------------------------------------------
     // Constants
@@ -257,9 +257,10 @@
     let paused = false;
     let lastTime = 0;
     let currentSceneIndex = 0;
+    let activeScene = null;
 
     // -----------------------------------------------------------------------
-    // Stub scenes (stacking/bouncing replaced in Task 2, cradle/ragdoll in Plan 02)
+    // Stub scenes for Plan 02 (Newton's Cradle, Ragdoll)
     // -----------------------------------------------------------------------
     function stubScene(name) {
       return {
@@ -278,8 +279,8 @@
     }
 
     const scenes = [
-      stubScene('Stacking Boxes'),
-      stubScene('Bouncing Balls'),
+      stackingScene(),
+      bouncingScene(),
       stubScene("Newton's Cradle"),
       stubScene("Ragdoll"),
     ];
@@ -385,8 +386,8 @@
       }
 
       // 2. Cleanup previous scene (timers etc.)
-      if (scenes[currentSceneIndex] && scenes[currentSceneIndex].cleanup) {
-        scenes[currentSceneIndex].cleanup();
+      if (activeScene && activeScene.cleanup) {
+        activeScene.cleanup();
       }
 
       // 3. Reset body IDs for predictable palette cycling
@@ -409,7 +410,8 @@
       // 7. Build tweaks
       buildTweaks(scene);
 
-      // 8. Reset loop time
+      // 8. Track active scene and reset loop time
+      activeScene = scene;
       lastTime = 0;
     }
 
