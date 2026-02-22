@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vis - 2D Physics Engine Demos</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0d0d0f;
+      color: #e0e0e0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #f0f0f0;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .tab-bar button {
+      background: #1e1e22;
+      color: #b0b0b0;
+      border: 1px solid #2a2a2e;
+      border-bottom: 3px solid transparent;
+      padding: 8px 18px;
+      font-size: 0.82rem;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .tab-bar button:hover {
+      background: #28282e;
+      color: #d0d0d0;
+    }
+
+    .tab-bar button.active {
+      background: #3a3a4a;
+      color: #f0f0f0;
+      border-bottom-color: #45b3e0;
+    }
+
+    .main-area {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    canvas {
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #16161a;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-btn {
+      width: 100%;
+      padding: 8px 0;
+      background: #1e1e22;
+      color: #d0d0d0;
+      border: 1px solid #2a2a2e;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .sidebar-btn:hover {
+      background: #2a2a30;
+    }
+
+    .sidebar-btn.active-toggle {
+      background: #2a3a44;
+      border-color: #45b3e0;
+      color: #45b3e0;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-row .sidebar-btn {
+      flex: 1;
+    }
+
+    .tweak-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tweak-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tweak-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #999;
+    }
+
+    .tweak-label span:last-child {
+      color: #45b3e0;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #2a2a2e;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #45b3e0;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #45b3e0;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+
+    .separator {
+      border: none;
+      border-top: 1px solid #2a2a2e;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>vis</h1>
+    <p>2D Rigid Body Physics Engine</p>
+  </header>
+
+  <div class="tab-bar" id="tabBar"></div>
+
+  <div class="main-area">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <div class="sidebar">
+      <h3>Controls</h3>
+      <button class="sidebar-btn" id="btnReset">Reset</button>
+      <div class="btn-row">
+        <button class="sidebar-btn" id="btnDebug">Debug: OFF</button>
+        <button class="sidebar-btn" id="btnPause">Pause</button>
+      </div>
+      <hr class="separator" />
+      <h3>Parameters</h3>
+      <div class="tweak-group" id="tweakGroup"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      Vec2,
+      Body,
+      BodyType,
+      Circle,
+      Polygon,
+      World,
+      Renderer,
+      MouseConstraint,
+      DistanceConstraint,
+      RevoluteConstraint,
+      ShapeType,
+    } from '../src/index.ts';
+
+    // Scene factory imports -- replaced in Task 2 with real implementations
+    // For now, stacking/bouncing use inline stubs alongside cradle/ragdoll stubs
+
+    // -----------------------------------------------------------------------
+    // Constants
+    // -----------------------------------------------------------------------
+    const CANVAS_WIDTH = 800;
+    const CANVAS_HEIGHT = 600;
+    const SCALE = 50;
+    const OFFSET_X = CANVAS_WIDTH / 2;
+    const OFFSET_Y = 50;
+
+    // -----------------------------------------------------------------------
+    // State
+    // -----------------------------------------------------------------------
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let world = null;
+    let renderer = null;
+    let activeConstraint = null;
+    let grabbedBody = null;
+    let debugOn = false;
+    let paused = false;
+    let lastTime = 0;
+    let currentSceneIndex = 0;
+
+    // -----------------------------------------------------------------------
+    // Stub scenes (stacking/bouncing replaced in Task 2, cradle/ragdoll in Plan 02)
+    // -----------------------------------------------------------------------
+    function stubScene(name) {
+      return {
+        name,
+        create(w) {
+          // Static ground so the scene isn't empty
+          const ground = new Body({
+            shape: Polygon.box(16, 0.5),
+            type: BodyType.Static,
+            position: new Vec2(0, -0.25),
+          });
+          w.addBody(ground);
+        },
+        tweaks: [],
+      };
+    }
+
+    const scenes = [
+      stubScene('Stacking Boxes'),
+      stubScene('Bouncing Balls'),
+      stubScene("Newton's Cradle"),
+      stubScene("Ragdoll"),
+    ];
+
+    // -----------------------------------------------------------------------
+    // Tab bar
+    // -----------------------------------------------------------------------
+    const tabBar = document.getElementById('tabBar');
+    scenes.forEach((scene, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = scene.name;
+      btn.addEventListener('click', () => {
+        currentSceneIndex = i;
+        switchScene(scenes[i]);
+        updateTabHighlight();
+      });
+      tabBar.appendChild(btn);
+    });
+
+    function updateTabHighlight() {
+      const tabs = tabBar.querySelectorAll('button');
+      tabs.forEach((t, i) => {
+        t.classList.toggle('active', i === currentSceneIndex);
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // Sidebar controls
+    // -----------------------------------------------------------------------
+    const btnReset = document.getElementById('btnReset');
+    const btnDebug = document.getElementById('btnDebug');
+    const btnPause = document.getElementById('btnPause');
+    const tweakGroup = document.getElementById('tweakGroup');
+
+    btnReset.addEventListener('click', () => {
+      switchScene(scenes[currentSceneIndex]);
+    });
+
+    btnDebug.addEventListener('click', () => {
+      debugOn = !debugOn;
+      if (renderer) renderer.setDebug(debugOn);
+      btnDebug.textContent = debugOn ? 'Debug: ON' : 'Debug: OFF';
+      btnDebug.classList.toggle('active-toggle', debugOn);
+    });
+
+    btnPause.addEventListener('click', () => {
+      paused = !paused;
+      if (!paused) lastTime = 0; // reset to avoid time spike on unpause
+      btnPause.textContent = paused ? 'Play' : 'Pause';
+      btnPause.classList.toggle('active-toggle', paused);
+    });
+
+    function buildTweaks(scene) {
+      tweakGroup.innerHTML = '';
+      if (!scene.tweaks || scene.tweaks.length === 0) {
+        const msg = document.createElement('div');
+        msg.style.fontSize = '0.78rem';
+        msg.style.color = '#555';
+        msg.textContent = 'No parameters for this demo';
+        tweakGroup.appendChild(msg);
+        return;
+      }
+      for (const tweak of scene.tweaks) {
+        const item = document.createElement('div');
+        item.className = 'tweak-item';
+
+        const label = document.createElement('div');
+        label.className = 'tweak-label';
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = tweak.label;
+        const valSpan = document.createElement('span');
+        valSpan.textContent = tweak.value.toFixed(2);
+        label.appendChild(nameSpan);
+        label.appendChild(valSpan);
+
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.min = String(tweak.min);
+        slider.max = String(tweak.max);
+        slider.step = String(tweak.step);
+        slider.value = String(tweak.value);
+        slider.addEventListener('input', () => {
+          const v = parseFloat(slider.value);
+          valSpan.textContent = v.toFixed(2);
+          tweak.onChange(v);
+        });
+
+        item.appendChild(label);
+        item.appendChild(slider);
+        tweakGroup.appendChild(item);
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // Scene management
+    // -----------------------------------------------------------------------
+    function switchScene(scene) {
+      // 1. Teardown
+      if (activeConstraint && world) {
+        world.removeConstraint(activeConstraint);
+        activeConstraint = null;
+        grabbedBody = null;
+      }
+
+      // 2. Cleanup previous scene (timers etc.)
+      if (scenes[currentSceneIndex] && scenes[currentSceneIndex].cleanup) {
+        scenes[currentSceneIndex].cleanup();
+      }
+
+      // 3. Reset body IDs for predictable palette cycling
+      Body.resetIdCounter();
+
+      // 4. Create fresh world
+      world = new World({ gravity: new Vec2(0, -9.81) });
+
+      // 5. Populate scene
+      scene.create(world);
+
+      // 6. Create renderer (we drive the loop ourselves, so don't call start())
+      renderer = new Renderer(canvas, world, {
+        scale: SCALE,
+        offsetY: OFFSET_Y,
+        background: '#1a1a2e',
+        debug: debugOn,
+      });
+
+      // 7. Build tweaks
+      buildTweaks(scene);
+
+      // 8. Reset loop time
+      lastTime = 0;
+    }
+
+    // -----------------------------------------------------------------------
+    // Screen-to-world coordinate transform (inverse of Renderer Y-up)
+    // -----------------------------------------------------------------------
+    function screenToWorld(sx, sy) {
+      const wx = (sx - OFFSET_X) / SCALE;
+      const wy = (CANVAS_HEIGHT - OFFSET_Y - sy) / SCALE;
+      return new Vec2(wx, wy);
+    }
+
+    // -----------------------------------------------------------------------
+    // Hit testing
+    // -----------------------------------------------------------------------
+    function bodyAtPoint(point) {
+      const bodies = world.getBodies();
+      for (let i = bodies.length - 1; i >= 0; i--) {
+        const body = bodies[i];
+        if (body.type === BodyType.Static) continue;
+
+        const cos = Math.cos(-body.angle);
+        const sin = Math.sin(-body.angle);
+        const dx = point.x - body.position.x;
+        const dy = point.y - body.position.y;
+        const localX = cos * dx - sin * dy;
+        const localY = sin * dx + cos * dy;
+
+        if (body.shape.type === ShapeType.Circle) {
+          const circle = body.shape;
+          const cx = localX - circle.offset.x;
+          const cy = localY - circle.offset.y;
+          if (cx * cx + cy * cy <= circle.radius * circle.radius) return body;
+        } else {
+          // Polygon: point-in-convex-polygon via cross product test
+          const poly = body.shape;
+          const verts = poly.vertices;
+          const px = localX - poly.offset.x;
+          const py = localY - poly.offset.y;
+          let inside = true;
+          for (let j = 0; j < verts.length; j++) {
+            const next = (j + 1) % verts.length;
+            const ex = verts[next].x - verts[j].x;
+            const ey = verts[next].y - verts[j].y;
+            const qx = px - verts[j].x;
+            const qy = py - verts[j].y;
+            if (ex * qy - ey * qx < 0) { inside = false; break; }
+          }
+          if (inside) return body;
+        }
+      }
+      return null;
+    }
+
+    // -----------------------------------------------------------------------
+    // Mouse interaction
+    // -----------------------------------------------------------------------
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!world) return;
+      const wp = screenToWorld(e.offsetX, e.offsetY);
+      const body = bodyAtPoint(wp);
+      if (!body) return;
+
+      // Compute local anchor
+      const cos = Math.cos(-body.angle);
+      const sin = Math.sin(-body.angle);
+      const dx = wp.x - body.position.x;
+      const dy = wp.y - body.position.y;
+      const localAnchor = { x: cos * dx - sin * dy, y: sin * dx + cos * dy };
+
+      activeConstraint = new MouseConstraint(body, localAnchor, wp);
+      world.addConstraint(activeConstraint);
+      grabbedBody = body;
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (!activeConstraint) return;
+      activeConstraint.setTarget(screenToWorld(e.offsetX, e.offsetY));
+    });
+
+    canvas.addEventListener('pointerup', () => {
+      if (activeConstraint && world) {
+        world.removeConstraint(activeConstraint);
+        activeConstraint = null;
+        grabbedBody = null;
+      }
+    });
+
+    // -----------------------------------------------------------------------
+    // Drag visual feedback
+    // -----------------------------------------------------------------------
+    function drawDragFeedback() {
+      if (!activeConstraint || !grabbedBody) return;
+
+      const anchorWorld = activeConstraint.getWorldAnchorA();
+      const target = activeConstraint.getWorldAnchorB();
+
+      // Apply same Y-up transform as Renderer
+      ctx.save();
+      ctx.setTransform(
+        SCALE, 0,
+        0, -SCALE,
+        OFFSET_X, CANVAS_HEIGHT - OFFSET_Y,
+      );
+
+      // Line from grab point to cursor
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.lineWidth = 1.5 / SCALE;
+      ctx.beginPath();
+      ctx.moveTo(anchorWorld.x, anchorWorld.y);
+      ctx.lineTo(target.x, target.y);
+      ctx.stroke();
+
+      // Highlight outline of grabbed body
+      ctx.strokeStyle = 'rgba(255, 255, 100, 0.6)';
+      ctx.lineWidth = 2.5 / SCALE;
+      const body = grabbedBody;
+      const bx = body.position.x;
+      const by = body.position.y;
+
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(body.angle);
+
+      if (body.shape.type === ShapeType.Circle) {
+        const circle = body.shape;
+        ctx.beginPath();
+        ctx.arc(circle.offset.x, circle.offset.y, circle.radius, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        const poly = body.shape;
+        const verts = poly.vertices;
+        const ox = poly.offset.x;
+        const oy = poly.offset.y;
+        ctx.beginPath();
+        ctx.moveTo(verts[0].x + ox, verts[0].y + oy);
+        for (let i = 1; i < verts.length; i++) {
+          ctx.lineTo(verts[i].x + ox, verts[i].y + oy);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // -----------------------------------------------------------------------
+    // Animation loop (demo page drives its own rAF, NOT renderer.start())
+    // -----------------------------------------------------------------------
+    function loop(now) {
+      requestAnimationFrame(loop);
+
+      if (paused || !world || !renderer) return;
+
+      if (lastTime === 0) {
+        lastTime = now;
+        return;
+      }
+
+      let dt = (now - lastTime) / 1000;
+      if (dt > 0.1) dt = 0.1;
+      lastTime = now;
+
+      const alpha = world.step(dt);
+      renderer.draw(alpha);
+      drawDragFeedback();
+    }
+
+    // -----------------------------------------------------------------------
+    // Boot
+    // -----------------------------------------------------------------------
+    switchScene(scenes[0]);
+    updateTabHighlight();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

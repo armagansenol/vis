@@ -53,6 +53,11 @@ export class World {
     });
   }
 
+  /** Direct access to the gravity vector. Mutations affect subsequent steps. */
+  get gravity(): import('../math/Vec2.js').Vec2 {
+    return this.settings.gravity;
+  }
+
   // ---------------------------------------------------------------------------
   // Body management
   // ---------------------------------------------------------------------------
