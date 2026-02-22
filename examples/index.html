@@ -234,6 +234,8 @@
 
     import { stackingScene } from './demos/stacking.ts';
     import { bouncingScene } from './demos/bouncing.ts';
+    import { cradleScene } from './demos/cradle.ts';
+    import { ragdollScene } from './demos/ragdoll.ts';
 
     // -----------------------------------------------------------------------
     // Constants
@@ -259,30 +261,11 @@
     let currentSceneIndex = 0;
     let activeScene = null;
 
-    // -----------------------------------------------------------------------
-    // Stub scenes for Plan 02 (Newton's Cradle, Ragdoll)
-    // -----------------------------------------------------------------------
-    function stubScene(name) {
-      return {
-        name,
-        create(w) {
-          // Static ground so the scene isn't empty
-          const ground = new Body({
-            shape: Polygon.box(16, 0.5),
-            type: BodyType.Static,
-            position: new Vec2(0, -0.25),
-          });
-          w.addBody(ground);
-        },
-        tweaks: [],
-      };
-    }
-
     const scenes = [
       stackingScene(),
       bouncingScene(),
-      stubScene("Newton's Cradle"),
-      stubScene("Ragdoll"),
+      cradleScene(),
+      ragdollScene(),
     ];
 
     // -----------------------------------------------------------------------
@@ -393,8 +376,8 @@
       // 3. Reset body IDs for predictable palette cycling
       Body.resetIdCounter();
 
-      // 4. Create fresh world
-      world = new World({ gravity: new Vec2(0, -9.81) });
+      // 4. Create fresh world (merge scene-specific world settings if any)
+      world = new World({ gravity: new Vec2(0, -9.81), ...(scene.worldSettings || {}) });
 
       // 5. Populate scene
       scene.create(world);
