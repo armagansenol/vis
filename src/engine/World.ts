@@ -1,6 +1,7 @@
 import { Body } from '../dynamics/Body.js';
 import { BodyType } from '../dynamics/BodyType.js';
 import { CollisionSystem } from '../collision/CollisionSystem.js';
+import { type Constraint } from '../constraints/Constraint.js';
 import { type ContactListener } from '../events/EventDispatcher.js';
 import { ContactSolver } from '../solver/ContactSolver.js';
 import { DEFAULT_WORLD_SETTINGS, type WorldSettings } from './WorldSettings.js';
@@ -20,6 +21,7 @@ import { DEFAULT_WORLD_SETTINGS, type WorldSettings } from './WorldSettings.js';
 export class World {
   private readonly settings: WorldSettings;
   private readonly bodies: Body[] = [];
+  private readonly constraints: Constraint[] = [];
   private readonly collisionSystem: CollisionSystem;
   private readonly solver: ContactSolver;
   private accumulator = 0;
@@ -69,6 +71,34 @@ export class World {
   /** Get a readonly view of all bodies in the world. */
   getBodies(): readonly Body[] {
     return this.bodies;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Constraint management
+  // ---------------------------------------------------------------------------
+
+  /** Add a constraint (joint) to the simulation. */
+  addConstraint(constraint: Constraint): void {
+    this.constraints.push(constraint);
+    if (!constraint.collideConnected) {
+      this.addPairExclusion(constraint.bodyA.id, constraint.bodyB.id);
+    }
+  }
+
+  /** Remove a constraint from the simulation. */
+  removeConstraint(constraint: Constraint): void {
+    const index = this.constraints.indexOf(constraint);
+    if (index !== -1) {
+      this.constraints.splice(index, 1);
+      if (!constraint.collideConnected) {
+        this.removePairExclusion(constraint.bodyA.id, constraint.bodyB.id);
+      }
+    }
+  }
+
+  /** Get a readonly view of all constraints in the world. */
+  getConstraints(): readonly Constraint[] {
+    return this.constraints;
   }
 
   // ---------------------------------------------------------------------------
@@ -131,9 +161,15 @@ export class World {
     // Phase 2: Detect collisions
     const manifolds = this.collisionSystem.detect(bodies);
 
-    // Phase 3: Solve constraints
+    // Phase 3: Solve constraints (contacts + joints interleaved)
     this.solver.preStep(manifolds, dt);
+    for (let i = 0; i < this.constraints.length; i++) {
+      this.constraints[i].preStep(dt);
+    }
     for (let iter = 0; iter < velocityIterations; iter++) {
+      for (let i = 0; i < this.constraints.length; i++) {
+        this.constraints[i].solveVelocity();
+      }
       this.solver.solve();
     }
 
