@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Collision Detection** - Broadphase, narrowphase, contact manifolds, and collision events
 - [ ] **Phase 3: Solver and Engine Loop** - Sequential impulses solver with warm starting, fixed-timestep simulation loop
 - [ ] **Phase 4: Constraints** - Distance joints, springs, revolute joints, and mouse constraint
-- [ ] **Phase 5: Renderer** - Canvas 2D renderer with debug drawing and frame interpolation
+- [x] **Phase 5: Renderer** - Canvas 2D renderer with debug drawing and frame interpolation
 - [ ] **Phase 6: Demo Scenes** - Four canonical demos that validate the full engine stack
 
 ## Phase Details
@@ -98,7 +98,7 @@ Plans:
 
 Plans:
 - [x] 05-01-PLAN.md — Physics data plumbing + core Canvas 2D renderer with interpolation
-- [ ] 05-02-PLAN.md — Debug overlays (AABBs, contacts, normals, constraints) + visual verification
+- [x] 05-02-PLAN.md — Debug overlays (AABBs, contacts, normals, constraints) + visual verification
 
 ### Phase 6: Demo Scenes
 **Goal**: Four canonical demos validate the full engine and serve as both integration tests and library showcase
@@ -127,5 +127,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Collision Detection | 3/3 | Complete | 2026-02-21 |
 | 3. Solver and Engine Loop | 0/2 | Not started | - |
 | 4. Constraints | 0/2 | Not started | - |
-| 5. Renderer | 1/2 | In progress | - |
+| 5. Renderer | 2/2 | Complete | 2026-02-22 |
 | 6. Demo Scenes | 0/2 | Not started | - |

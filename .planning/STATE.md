@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** A correct, performant rigid body physics simulation that you fully understand and control because you built every line of it.
-**Current focus:** Phase 5: Renderer
+**Current focus:** Phase 6: Demo Scenes
 
 ## Current Position
 
-Phase: 5 of 6 (Renderer)
-Plan: 2 of 2 in current phase
+Phase: 6 of 6 (Demo Scenes)
+Plan: 1 of 2 in current phase
 Status: Ready
-Last activity: 2026-02-22 — Completed 05-01-PLAN.md (Core renderer with interpolation)
+Last activity: 2026-02-22 — Completed 05-02-PLAN.md (Debug overlays + visual verification)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 85%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 4min
-- Total execution time: 43min
+- Total execution time: 45min
 
 **By Phase:**
 
@@ -41,8 +41,10 @@ Progress: [████████░░] 80%
 | Phase 04 P02 | 4min | 2 tasks | 5 files |
 | Phase 05 P01 | 4min | 2 tasks | 11 files |
 
+| Phase 05 P02 | 2min | 2 tasks | 4 files |
+
 **Recent Trend:**
-- Last 5 plans: 4min, 3min, 4min, 4min, 4min
+- Last 5 plans: 3min, 4min, 4min, 4min, 2min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -91,6 +93,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 2x2 K matrix with Cramer's rule inline inverse for revolute/mouse point constraints
 - [Phase 05]: Static bodies skip interpolation (use current position directly)
 - [Phase 05]: darkenColor helper parses rgba and reduces brightness 30% for stroke outlines
+- [Phase 05]: DebugRenderer uses static methods (no instance state needed)
+- [Phase 05]: Line widths scale inversely with zoom (lineWidth = N / scale) for consistent visual size
 
 ### Pending Todos
 
@@ -103,5 +107,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 05-01-PLAN.md (Core renderer with body drawing, interpolation, rAF loop)
-Resume file: .planning/phases/05-renderer/05-01-SUMMARY.md
+Stopped at: Completed 05-02-PLAN.md (Debug overlays with AABB, contacts, normals, constraints)
+Resume file: .planning/phases/05-renderer/05-02-SUMMARY.md

@@ -66,7 +66,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Rendering
 
 - [x] **RNDR-01**: Canvas 2D renderer that draws bodies as their shape (circles, polygons)
-- [ ] **RNDR-02**: Debug drawing mode showing AABBs, contact points, contact normals, constraint connections
+- [x] **RNDR-02**: Debug drawing mode showing AABBs, contact points, contact normals, constraint connections
 - [x] **RNDR-03**: Render interpolation between physics steps for smooth visuals at any frame rate
 
 ### Demos
@@ -160,7 +160,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONS-03 | Phase 4 | Complete |
 | CONS-04 | Phase 4 | Complete |
 | RNDR-01 | Phase 5 | Complete |
-| RNDR-02 | Phase 5 | Pending |
+| RNDR-02 | Phase 5 | Complete |
 | RNDR-03 | Phase 5 | Complete |
 | DEMO-01 | Phase 6 | Pending |
 | DEMO-02 | Phase 6 | Pending |
