@@ -110,11 +110,11 @@ Plans:
   3. Newton's cradle demo: releasing one ball transfers momentum through the chain, last ball swings out correctly
   4. Ragdoll demo: linked body segments swing naturally under gravity with revolute joints at each connection
   5. All demos run in a browser via Vite dev server with interactive mouse dragging
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md — Demo page shell (dark theme, tabs, sidebar, mouse drag) + stacking boxes + bouncing balls
+- [ ] 06-02-PLAN.md — Newton's cradle + ragdoll demos + human verification of all 4 demos
 
 ## Progress
 
