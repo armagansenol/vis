@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-21)
 
 **Core value:** A correct, performant rigid body physics simulation that you fully understand and control because you built every line of it.
-**Current focus:** Phase 4: Constraints
+**Current focus:** Phase 5: Renderer
 
 ## Current Position
 
-Phase: 4 of 6 (Constraints)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-22 — Completed 04-01-PLAN.md
+Phase: 5 of 6 (Renderer)
+Plan: 1 of N in current phase
+Status: Ready
+Last activity: 2026-02-22 — Completed 04-02-PLAN.md (Phase 4 complete)
 
-Progress: [██████░░░░] 64%
+Progress: [███████░░░] 73%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 4min
-- Total execution time: 35min
+- Total execution time: 39min
 
 **By Phase:**
 
@@ -38,8 +38,10 @@ Progress: [██████░░░░] 64%
 
 | Phase 04 P01 | 4min | 2 tasks | 8 files |
 
+| Phase 04 P02 | 4min | 2 tasks | 5 files |
+
 **Recent Trend:**
-- Last 5 plans: 5min, 4min, 4min, 3min, 4min
+- Last 5 plans: 4min, 4min, 3min, 4min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -82,6 +84,10 @@ Recent decisions affecting current work:
 - [Phase 04]: Bilateral distance constraint (not rope) -- no clamping, maintains distance in both directions
 - [Phase 04]: Separate Distance and Spring classes rather than unified class with optional stiffness
 - [Phase 04]: Catto gamma/beta formulation for soft constraints with Nyquist frequency clamping
+- [Phase 04]: RevoluteConstraint takes worldAnchor, converts to local-space internally for ergonomic API
+- [Phase 04]: Mouse constraint bodyA=bodyB=body for Constraint interface compatibility
+- [Phase 04]: Mouse maxForce defaults to 1000 * body.mass for sensible drag without manual tuning
+- [Phase 04]: 2x2 K matrix with Cramer's rule inline inverse for revolute/mouse point constraints
 
 ### Pending Todos
 
@@ -94,5 +100,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 04-01-PLAN.md (Constraint interface + distance and spring constraints)
-Resume file: .planning/phases/04-constraints/04-01-SUMMARY.md
+Stopped at: Completed 04-02-PLAN.md (Phase 4 complete: all 4 constraint types)
+Resume file: .planning/phases/04-constraints/04-02-SUMMARY.md
