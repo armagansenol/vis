@@ -272,4 +272,22 @@ export class RevoluteConstraint implements Constraint {
     bodyB.velocity.y += lambdaY * bodyB.invMass;
     bodyB.angularVelocity += (this.rBx * lambdaY - this.rBy * lambdaX) * iB;
   }
+
+  getWorldAnchorA(): { x: number; y: number } {
+    const cos = Math.cos(this.bodyA.angle);
+    const sin = Math.sin(this.bodyA.angle);
+    return {
+      x: this.bodyA.position.x + cos * this.localAnchorA.x - sin * this.localAnchorA.y,
+      y: this.bodyA.position.y + sin * this.localAnchorA.x + cos * this.localAnchorA.y,
+    };
+  }
+
+  getWorldAnchorB(): { x: number; y: number } {
+    const cos = Math.cos(this.bodyB.angle);
+    const sin = Math.sin(this.bodyB.angle);
+    return {
+      x: this.bodyB.position.x + cos * this.localAnchorB.x - sin * this.localAnchorB.y,
+      y: this.bodyB.position.y + sin * this.localAnchorB.x + cos * this.localAnchorB.y,
+    };
+  }
 }

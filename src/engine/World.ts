@@ -3,6 +3,7 @@ import { BodyType } from '../dynamics/BodyType.js';
 import { CollisionSystem } from '../collision/CollisionSystem.js';
 import { type Constraint } from '../constraints/Constraint.js';
 import { type ContactListener } from '../events/EventDispatcher.js';
+import { type Manifold } from '../collision/Manifold.js';
 import { ContactSolver } from '../solver/ContactSolver.js';
 import { DEFAULT_WORLD_SETTINGS, type WorldSettings } from './WorldSettings.js';
 
@@ -25,6 +26,7 @@ export class World {
   private readonly collisionSystem: CollisionSystem;
   private readonly solver: ContactSolver;
   private accumulator = 0;
+  private latestManifolds: readonly Manifold[] = [];
 
   constructor(options?: Partial<WorldSettings>) {
     this.settings = {
@@ -101,6 +103,11 @@ export class World {
     return this.constraints;
   }
 
+  /** Get the manifolds from the most recent collision detection pass. */
+  getManifolds(): readonly Manifold[] {
+    return this.latestManifolds;
+  }
+
   // ---------------------------------------------------------------------------
   // Simulation step
   // ---------------------------------------------------------------------------
@@ -146,6 +153,15 @@ export class World {
     const { gravity, velocityIterations } = this.settings;
     const bodies = this.bodies;
 
+    // Phase 0: Save previous state for render interpolation (skip static bodies)
+    for (let i = 0; i < bodies.length; i++) {
+      const body = bodies[i];
+      if (body.type === BodyType.Static) continue;
+      body.prevPosition.x = body.position.x;
+      body.prevPosition.y = body.position.y;
+      body.prevAngle = body.angle;
+    }
+
     // Phase 1: Integrate velocities only (Dynamic bodies get gravity + forces)
     for (let i = 0; i < bodies.length; i++) {
       const body = bodies[i];
@@ -160,6 +176,7 @@ export class World {
 
     // Phase 2: Detect collisions
     const manifolds = this.collisionSystem.detect(bodies);
+    this.latestManifolds = manifolds;
 
     // Phase 3: Solve constraints (contacts + joints interleaved)
     this.solver.preStep(manifolds, dt);

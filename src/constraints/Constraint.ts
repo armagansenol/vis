@@ -31,4 +31,9 @@ export interface Constraint {
    * Called N times per step for convergence.
    */
   solveVelocity(): void;
+
+  /** Get the world-space position of anchor A. Used by the renderer. */
+  getWorldAnchorA(): { x: number; y: number };
+  /** Get the world-space position of anchor B. Used by the renderer. */
+  getWorldAnchorB(): { x: number; y: number };
 }

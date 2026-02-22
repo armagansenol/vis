@@ -170,4 +170,17 @@ export class MouseConstraint implements Constraint {
     body.velocity.y += applyY * invMass;
     body.angularVelocity += (this.rBx * applyY - this.rBy * applyX) * invInertia;
   }
+
+  getWorldAnchorA(): { x: number; y: number } {
+    const cos = Math.cos(this.body.angle);
+    const sin = Math.sin(this.body.angle);
+    return {
+      x: this.body.position.x + cos * this.localAnchor.x - sin * this.localAnchor.y,
+      y: this.body.position.y + sin * this.localAnchor.x + cos * this.localAnchor.y,
+    };
+  }
+
+  getWorldAnchorB(): { x: number; y: number } {
+    return { x: this.targetX, y: this.targetY };
+  }
 }

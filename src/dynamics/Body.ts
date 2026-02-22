@@ -71,6 +71,11 @@ export class Body {
   /** Collision mask bitmask — which categories this body collides with. */
   maskBits: number;
 
+  /** Previous position for render interpolation. Updated by World before each physics step. */
+  prevPosition: Vec2;
+  /** Previous angle for render interpolation. Updated by World before each physics step. */
+  prevAngle: number;
+
   /** Reset the auto-incrementing ID counter. Use in tests for deterministic IDs. */
   static resetIdCounter(): void {
     Body.nextId = 0;
@@ -91,6 +96,10 @@ export class Body {
 
     this.force = Vec2.zero();
     this.torque = 0;
+
+    // Initialize interpolation fields
+    this.prevPosition = this.position.clone();
+    this.prevAngle = this.angle;
 
     // Initialize mass properties
     this.mass = 0;
