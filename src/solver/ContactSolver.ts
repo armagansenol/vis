@@ -120,18 +120,24 @@ export class ContactSolver {
         // Normal component of relative velocity
         const vn = dvx * nx + dvy * ny;
 
-        // Velocity bias: small Baumgarte stabilization + restitution bounce
-        // (bulk position correction is handled separately in solvePositions)
-        let bias = 0;
-        // Small Baumgarte to prevent drift during velocity solving
+        // Velocity bias: max(Baumgarte, restitution) — not the sum.
+        //
+        // Summing Baumgarte + restitution injects extra energy into elastic
+        // impacts, causing overcorrection (e.g., Newton's Cradle balls flying
+        // apart). Taking the max ensures:
+        // - Elastic impacts: restitution dominates, no extra energy from Baumgarte
+        // - Inelastic impacts: Baumgarte provides penetration correction
+        // - Resting contacts: Baumgarte prevents drift under persistent forces
+        let baumgarteBias = 0;
         const penetration = contact.depth - slop;
         if (penetration > 0) {
-          bias += (beta * 0.5 * invDt) * penetration;
+          baumgarteBias = (beta * 0.5 * invDt) * penetration;
         }
-        // Restitution bounce: only if approaching above threshold
+        let restitutionBias = 0;
         if (-vn > restitutionSlop) {
-          bias += restitution * (-vn);
+          restitutionBias = restitution * (-vn);
         }
+        const bias = Math.max(baumgarteBias, restitutionBias);
 
         const constraint: ContactConstraint = {
           bodyA,
