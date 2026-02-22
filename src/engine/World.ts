@@ -170,12 +170,24 @@ export class World {
     }
 
     // Phase 1: Integrate velocities only (Dynamic bodies get gravity + forces)
+    const maxTranslation = this.settings.maxTranslation;
+    const maxSpeed = maxTranslation / dt;
+    const maxSpeedSq = maxSpeed * maxSpeed;
+
     for (let i = 0; i < bodies.length; i++) {
       const body = bodies[i];
       if (body.type === BodyType.Dynamic) {
         body.velocity.x += (body.force.x * body.invMass + gravity.x * body.gravityScale) * dt;
         body.velocity.y += (body.force.y * body.invMass + gravity.y * body.gravityScale) * dt;
         body.angularVelocity += body.torque * body.invInertia * dt;
+
+        // Clamp velocity to prevent tunneling through thin objects
+        const speedSq = body.velocity.x * body.velocity.x + body.velocity.y * body.velocity.y;
+        if (speedSq > maxSpeedSq) {
+          const scale = maxSpeed / Math.sqrt(speedSq);
+          body.velocity.x *= scale;
+          body.velocity.y *= scale;
+        }
       }
       // Kinematic: velocity is user-controlled, no changes here
       // Static: no velocity changes

@@ -25,6 +25,8 @@ export interface WorldSettings {
   restitutionSlop: number;
   /** Cell size for spatial hash broadphase. Default: 2. */
   cellSize: number;
+  /** Maximum translation per step in world units. Clamps velocity to prevent tunneling. Default: 2. */
+  maxTranslation: number;
 }
 
 export const DEFAULT_WORLD_SETTINGS: WorldSettings = {
@@ -37,4 +39,5 @@ export const DEFAULT_WORLD_SETTINGS: WorldSettings = {
   penetrationSlop: 0.01,
   restitutionSlop: 0.5,
   cellSize: 2,
+  maxTranslation: 2,
 };
