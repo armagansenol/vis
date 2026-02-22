@@ -11,6 +11,7 @@ import {
   STATIC_BODY_COLOR,
   STATIC_BODY_STROKE,
 } from './RenderOptions.js';
+import { DebugRenderer } from './DebugRenderer.js';
 
 /**
  * Canvas 2D renderer for the physics simulation.
@@ -29,6 +30,7 @@ export class Renderer {
   private readonly offsetY: number;
   private readonly background: string;
   private readonly showRotation: boolean;
+  private debug: boolean;
 
   private running = false;
   private lastTime = 0;
@@ -54,6 +56,12 @@ export class Renderer {
     this.offsetY = options?.offsetY ?? DEFAULT_RENDER_OPTIONS.offsetY;
     this.background = options?.background ?? DEFAULT_RENDER_OPTIONS.background;
     this.showRotation = options?.showRotation ?? DEFAULT_RENDER_OPTIONS.showRotation;
+    this.debug = options?.debug ?? DEFAULT_RENDER_OPTIONS.debug;
+  }
+
+  /** Enable or disable debug overlay drawing. */
+  setDebug(enabled: boolean): void {
+    this.debug = enabled;
   }
 
   /** Start the render loop (requestAnimationFrame). */
@@ -126,6 +134,18 @@ export class Renderer {
       } else if (body.shape.type === ShapeType.Polygon) {
         this.drawPolygon(ctx, body.shape as Polygon, renderX, renderY, renderAngle);
       }
+    }
+
+    // Debug overlays (drawn after bodies so they appear on top)
+    if (this.debug) {
+      const bodies = this.world.getBodies();
+      const manifolds = this.world.getManifolds();
+      const constraints = this.world.getConstraints();
+
+      DebugRenderer.drawAABBs(ctx, bodies, this.scale);
+      DebugRenderer.drawContacts(ctx, manifolds, this.scale);
+      DebugRenderer.drawNormals(ctx, manifolds, this.scale);
+      DebugRenderer.drawConstraints(ctx, constraints, this.scale);
     }
   }
 
