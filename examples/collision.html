@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vis - Collision System Docs</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0d0d0f;
+      color: #e0e0e0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #f0f0f0;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    header nav {
+      margin-top: 10px;
+      font-size: 0.82rem;
+    }
+
+    header nav a {
+      color: #45b3e0;
+      text-decoration: none;
+    }
+
+    header nav a:hover {
+      text-decoration: underline;
+    }
+
+    article {
+      max-width: 780px;
+      width: 100%;
+      line-height: 1.7;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      margin-top: 48px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #2a2a2e;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #d0d0d0;
+      margin-top: 28px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: #ccc;
+    }
+
+    strong {
+      color: #e0e0e0;
+    }
+
+    ul, ol {
+      margin-bottom: 14px;
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+      color: #ccc;
+    }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.88em;
+      background: #1e1e22;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #45b3e0;
+    }
+
+    pre {
+      background: #16161a;
+      border: 1px solid #2a2a2e;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: #c8d0d8;
+      font-size: 0.84rem;
+    }
+
+    .keyword { color: #c586c0; }
+    .type { color: #4ec9b0; }
+    .property { color: #9cdcfe; }
+    .comment { color: #6a9955; }
+    .string { color: #ce9178; }
+    .number { color: #b5cea8; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #2a2a2e;
+      margin: 40px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #1e1e22;
+      color: #45b3e0;
+      font-weight: 600;
+      border-bottom: 2px solid #2a2a2e;
+    }
+
+    td {
+      padding: 8px 14px;
+      border-bottom: 1px solid #1e1e22;
+      color: #ccc;
+    }
+
+    tr:hover td {
+      background: #16161a;
+    }
+
+    .file-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      background: #1e1e22;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 20px 0 24px;
+    }
+
+    .pipeline-step {
+      background: #1e1e22;
+      border: 1px solid #2a2a2e;
+      border-radius: 6px;
+      padding: 8px 24px;
+      font-size: 0.88rem;
+      color: #d0d0d0;
+      text-align: center;
+      min-width: 280px;
+    }
+
+    .pipeline-arrow {
+      color: #45b3e0;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 2px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>vis</h1>
+    <p>Collision System Documentation</p>
+    <nav><a href="index.html">&larr; Back to Demos</a></nav>
+  </header>
+
+  <article>
+    <!-- ================================================================== -->
+    <h2>Pipeline Overview</h2>
+
+    <p>The collision system runs a <strong>5-stage pipeline</strong> every fixed timestep, orchestrated by <code>World.singleStep()</code>:</p>
+
+    <div class="pipeline">
+      <div class="pipeline-step">Integrate Velocities</div>
+      <div class="pipeline-arrow">&#9660;</div>
+      <div class="pipeline-step">Broad-phase (Spatial Hash)</div>
+      <div class="pipeline-arrow">&#9660;</div>
+      <div class="pipeline-step">Narrow-phase (SAT / Voronoi)</div>
+      <div class="pipeline-arrow">&#9660;</div>
+      <div class="pipeline-step">Manifold Persistence (Warm-Start Transfer)</div>
+      <div class="pipeline-arrow">&#9660;</div>
+      <div class="pipeline-step">Constraint Solving (Sequential Impulse + Position Correction)</div>
+    </div>
+
+    <p>Collision detection happens <strong>after</strong> velocity integration but <strong>before</strong> position integration. This allows the solver to correct velocities before they're committed to positions — the key insight behind semi-implicit Euler integration.</p>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Broad-phase: Spatial Hashing</h2>
+
+    <span class="file-tag">SpatialHash.ts</span>
+
+    <p>A uniform grid partitions the world into cells. Each body's AABB is inserted into every cell it overlaps. Candidate pairs are generated from bodies sharing the same cell.</p>
+
+    <ul>
+      <li><strong>Cell key:</strong> Cantor-style hash — <code>((cx * 92837111) ^ (cy * 689287499)) | 0</code></li>
+      <li><strong>Pair deduplication:</strong> Canonical key <code>min(idA, idB):max(idA, idB)</code> via a <code>Set</code></li>
+      <li><strong>Complexity:</strong> O(n) insertion, O(candidates) querying</li>
+    </ul>
+
+    <p>Cell size is configurable (<code>WorldSettings.cellSize</code>, default 2). Smaller cells reduce spurious candidates but increase memory. A good heuristic is 2–4× the largest body diameter.</p>
+
+    <h3>Collision Filtering</h3>
+
+    <p>Before narrowphase, pairs are filtered via bitmask (<code>CollisionFilter.ts</code>):</p>
+
+    <pre><code>shouldCollide = (a.categoryBits &amp; b.maskBits) !== 0
+            &amp;&amp; (b.categoryBits &amp; a.maskBits) !== 0</code></pre>
+
+    <p>Static-static pairs are always rejected (neither can move). Joint-connected pairs can be excluded via <code>World.addPairExclusion()</code>.</p>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Narrow-phase</h2>
+
+    <span class="file-tag">narrowphase.ts</span> <span class="file-tag">sat.ts</span>
+
+    <p>Three dispatch paths based on shape type combinations:</p>
+
+    <h3>Circle vs Circle</h3>
+
+    <p>Distance check between world-space centers. Single contact point on body A's surface. Normal points from A toward B.</p>
+
+    <h3>Circle vs Polygon (Voronoi Regions)</h3>
+
+    <span class="file-tag">narrowphase.ts — circleVsPolygon()</span>
+
+    <p>The circle center is transformed into the polygon's local space. The algorithm finds the closest edge, then classifies the Voronoi region:</p>
+
+    <ul>
+      <li><strong>Edge interior:</strong> Project center onto edge. Normal is the edge outward normal.</li>
+      <li><strong>Vertex region:</strong> Closest feature is a vertex. Normal points from vertex to center.</li>
+      <li><strong>Circle inside polygon:</strong> Special case — deepest edge becomes the separating axis.</li>
+    </ul>
+
+    <p>A single contact point is produced.</p>
+
+    <h3>Polygon vs Polygon (SAT + Clipping)</h3>
+
+    <span class="file-tag">sat.ts — polygonVsPolygon()</span>
+
+    <p>Two-phase algorithm:</p>
+
+    <p><strong>1. SAT (Separating Axis Theorem):</strong> Test all edge normals from both polygons. Project both shapes onto each axis. If any axis shows zero overlap, the polygons are separated. The axis with minimum overlap becomes the collision normal (Minimum Translation Vector).</p>
+
+    <p><strong>2. Sutherland-Hodgman Clipping:</strong> Generate contact points by clipping one polygon's edge against another:</p>
+
+    <ol>
+      <li>Identify the <strong>reference edge</strong> — most aligned with the collision normal</li>
+      <li>Identify the <strong>incident edge</strong> — most anti-aligned on the other polygon</li>
+      <li>Clip the incident edge against the reference edge's side planes</li>
+      <li>Keep points behind the reference face</li>
+      <li>Deduplicate and cap at 2 contacts (the 2D standard)</li>
+    </ol>
+
+    <p><strong>Feature IDs</strong> encode which edges produced each contact (<code>(refEdgeIdx &lt;&lt; 8) | incVertIdx</code>), enabling warm-start matching across frames.</p>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Manifolds</h2>
+
+    <span class="file-tag">Manifold.ts</span>
+
+    <p>A manifold represents one collision pair:</p>
+
+    <pre><code><span class="keyword">interface</span> <span class="type">Manifold</span> {
+  <span class="property">bodyA</span>: <span class="type">Body</span>;
+  <span class="property">bodyB</span>: <span class="type">Body</span>;
+  <span class="property">normal</span>: <span class="type">Vec2</span>;             <span class="comment">// Always points from A toward B</span>
+  <span class="property">contacts</span>: <span class="type">ContactPoint</span>[]; <span class="comment">// 1-2 points</span>
+  <span class="property">friction</span>: <span class="type">number</span>;         <span class="comment">// sqrt(a.friction * b.friction)</span>
+  <span class="property">restitution</span>: <span class="type">number</span>;      <span class="comment">// max(a.restitution, b.restitution)</span>
+  <span class="property">isSensor</span>: <span class="type">boolean</span>;
+}</code></pre>
+
+    <p>Each contact carries cached impulses for warm-starting:</p>
+
+    <pre><code><span class="keyword">interface</span> <span class="type">ContactPoint</span> {
+  <span class="property">point</span>: <span class="type">Vec2</span>;              <span class="comment">// World-space location</span>
+  <span class="property">depth</span>: <span class="type">number</span>;            <span class="comment">// Penetration (positive = overlap)</span>
+  <span class="property">id</span>: <span class="type">number</span>;               <span class="comment">// Feature ID for persistence matching</span>
+  <span class="property">normalImpulse</span>: <span class="type">number</span>;    <span class="comment">// Cached from previous frame</span>
+  <span class="property">tangentImpulse</span>: <span class="type">number</span>;   <span class="comment">// Cached from previous frame</span>
+}</code></pre>
+
+    <h3>Material Mixing</h3>
+
+    <ul>
+      <li><strong>Friction:</strong> Geometric mean — <code>sqrt(a * b)</code>. Balances asymmetric surfaces (ice on rubber).</li>
+      <li><strong>Restitution:</strong> Max — <code>max(a, b)</code>. One elastic surface is enough to bounce.</li>
+    </ul>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Manifold Persistence</h2>
+
+    <span class="file-tag">ManifoldMap.ts</span>
+
+    <p>Tracks contacts across frames using a <code>Map&lt;pairKey, Manifold&gt;</code>. Each frame:</p>
+
+    <ol>
+      <li>New manifolds arrive from narrowphase</li>
+      <li>For persisting pairs, old contacts are matched to new contacts by <strong>feature ID</strong></li>
+      <li><code>normalImpulse</code> and <code>tangentImpulse</code> transfer from old to new (warm-start data)</li>
+      <li>New pairs are flagged as <code>began</code>, lost pairs as <code>ended</code> (for event callbacks)</li>
+    </ol>
+
+    <p>This persistence is critical — without it, the solver starts from zero each frame and stacks jitter.</p>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Constraint Solving</h2>
+
+    <span class="file-tag">ContactSolver.ts</span>
+
+    <p>A sequential impulse solver with three phases per step:</p>
+
+    <h3>Phase 1: preStep</h3>
+
+    <p>Build <code>ContactConstraint</code> for each contact. Precompute:</p>
+
+    <ul>
+      <li><strong>Lever arms</strong> (<code>rA</code>, <code>rB</code>) — vectors from body centers to contact point</li>
+      <li><strong>Effective masses</strong> — account for both linear and rotational inertia:
+        <pre><code>kNormal = invMassA + invMassB + invInertiaA * (rA × n)² + invInertiaB * (rB × n)²
+normalMass = <span class="number">1</span> / kNormal</code></pre>
+      </li>
+      <li><strong>Velocity bias</strong> — <code>max(baumgarteBias, restitutionBias)</code>:
+        <pre><code>baumgarteBias = (beta * <span class="number">0.5</span> / dt) * max(depth - slop, <span class="number">0</span>)
+restitutionBias = restitution * max(-vn, <span class="number">0</span>)    <span class="comment">// only if approaching fast</span>
+bias = max(baumgarteBias, restitutionBias)</code></pre>
+      </li>
+    </ul>
+
+    <p>The bias uses <strong>max</strong> (not sum) to prevent energy injection on elastic impacts. Summing would overcorrect — the restitution bounce already handles separation velocity, and adding Baumgarte on top injects extra energy that compounds across frames.</p>
+
+    <p><strong>Warm-start:</strong> Apply cached impulses from the manifold immediately. This gives the solver a head start, dramatically improving convergence for persistent contacts (stacks, resting bodies).</p>
+
+    <h3>Phase 2: solve (called N times)</h3>
+
+    <p>Each iteration processes all contacts:</p>
+
+    <p><strong>Normal impulse:</strong></p>
+
+    <pre><code>vn = relativeVelocity · normal
+lambda = normalMass * (-vn + bias)
+newAccumulated = max(oldAccumulated + lambda, <span class="number">0</span>)   <span class="comment">// can only push, not pull</span>
+lambda = newAccumulated - oldAccumulated</code></pre>
+
+    <p>The accumulated clamping is essential — it prevents the solver from pulling bodies together on subsequent iterations.</p>
+
+    <p><strong>Friction impulse:</strong></p>
+
+    <pre><code>vt = relativeVelocity · tangent
+lambdaT = tangentMass * (-vt)
+clamped to [-friction * normalImpulse, +friction * normalImpulse]   <span class="comment">// Coulomb cone</span></code></pre>
+
+    <h3>Phase 3: solvePositions (NGS)</h3>
+
+    <p>After velocity solving and position integration, directly move bodies apart to resolve remaining penetration:</p>
+
+    <pre><code>separation = -depth + slop
+correction = clamp(beta * (-separation), <span class="number">0</span>, maxLinearCorrection)
+impulse = correction / kNormal</code></pre>
+
+    <p>Position correction does <strong>not</strong> change velocity. This prevents energy accumulation that destabilizes stacks — a key distinction from velocity-level Baumgarte.</p>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Tuning Parameters</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Default</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>velocityIterations</code></td>
+          <td>8</td>
+          <td>Solver convergence. More = more stable, slower</td>
+        </tr>
+        <tr>
+          <td><code>positionIterations</code></td>
+          <td>4</td>
+          <td>Penetration resolution. More = tighter contacts</td>
+        </tr>
+        <tr>
+          <td><code>baumgarteFactor</code></td>
+          <td>0.2</td>
+          <td>Velocity bias strength. 0.1–0.3 typical</td>
+        </tr>
+        <tr>
+          <td><code>penetrationSlop</code></td>
+          <td>0.01</td>
+          <td>Dead-zone before position correction kicks in</td>
+        </tr>
+        <tr>
+          <td><code>restitutionSlop</code></td>
+          <td>0.5</td>
+          <td>Min closing velocity for restitution bounce</td>
+        </tr>
+        <tr>
+          <td><code>maxLinearCorrection</code></td>
+          <td>0.2</td>
+          <td>Position correction cap per iteration</td>
+        </tr>
+        <tr>
+          <td><code>cellSize</code></td>
+          <td>2</td>
+          <td>Spatial hash grid resolution</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr />
+
+    <!-- ================================================================== -->
+    <h2>Design Decisions</h2>
+
+    <p><strong>Semi-implicit Euler integration.</strong> Velocity is updated before position. This order is symplectic — it conserves energy better than explicit Euler and prevents the gradual energy gain that makes simulations explode.</p>
+
+    <p><strong>Normal always points A toward B.</strong> Consistent convention across all narrowphase paths. Simplifies the solver since impulse direction is always known.</p>
+
+    <p><strong>Max 2 contacts per manifold.</strong> The 2D standard. Two points are sufficient to represent any polygon-polygon contact (edge-edge or edge-vertex). Fewer constraints mean faster solving.</p>
+
+    <p><strong>Warm-starting via feature IDs.</strong> Contact impulses persist across frames by matching geometric features, not positions. This tolerates slight contact drift between frames while preserving solver convergence.</p>
+
+    <p><strong>max(Baumgarte, restitution) not sum.</strong> Prevents double-counting on elastic impacts. Baumgarte handles resting penetration correction; restitution handles bounce velocity. They serve the same purpose (separation) through different mechanisms, so the larger one wins.</p>
+
+    <p><strong>Position correction without velocity injection.</strong> The solver moves bodies apart directly after velocity solving. Injecting velocity would accumulate energy in stacks, causing them to explode upward. Direct position adjustment is energy-neutral.</p>
+
+  </article>
+</body>
+</html>
