@@ -198,6 +198,7 @@
   <header>
     <h1>vis</h1>
     <p>2D Rigid Body Physics Engine</p>
+    <nav style="margin-top:10px;font-size:0.82rem"><a href="collision.html" style="color:#45b3e0;text-decoration:none">Collision System Docs &rarr;</a></nav>
   </header>
 
   <div class="tab-bar" id="tabBar"></div>
@@ -471,8 +472,13 @@
     });
 
     canvas.addEventListener('pointermove', (e) => {
-      if (!activeConstraint) return;
-      activeConstraint.setTarget(screenToWorld(e.offsetX, e.offsetY));
+      if (activeConstraint) {
+        activeConstraint.setTarget(screenToWorld(e.offsetX, e.offsetY));
+      } else if (world) {
+        // Show grab cursor when hovering over draggable bodies
+        const wp = screenToWorld(e.offsetX, e.offsetY);
+        canvas.style.cursor = bodyAtPoint(wp) ? 'grab' : 'default';
+      }
     });
 
     canvas.addEventListener('pointerup', () => {
