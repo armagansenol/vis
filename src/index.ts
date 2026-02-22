@@ -6,3 +6,4 @@ export * from './constraints/index.js';
 export * from './events/index.js';
 export * from './solver/index.js';
 export * from './engine/index.js';
+export * from './render/index.js';
