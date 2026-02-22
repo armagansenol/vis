@@ -1,3 +1,13 @@
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Debug screenshots & logs
+*.png
+*.log
+
+# Playwright MCP
+.playwright-mcp/
+
+# Planning docs
+.planning/
