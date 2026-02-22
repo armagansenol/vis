@@ -47,9 +47,11 @@ export class World {
 
     this.solver = new ContactSolver({
       velocityIterations: this.settings.velocityIterations,
+      positionIterations: this.settings.positionIterations,
       baumgarteFactor: this.settings.baumgarteFactor,
       penetrationSlop: this.settings.penetrationSlop,
       restitutionSlop: this.settings.restitutionSlop,
+      maxLinearCorrection: 0.2,
     });
   }
 
@@ -202,6 +204,14 @@ export class World {
       body.position.x += body.velocity.x * dt;
       body.position.y += body.velocity.y * dt;
       body.angle += body.angularVelocity * dt;
+    }
+
+    // Phase 4.5: Position correction (NGS-style linear projection)
+    // Directly moves bodies apart to resolve remaining penetration
+    // without injecting velocity (prevents energy accumulation in stacks)
+    const posIter = this.settings.positionIterations;
+    for (let iter = 0; iter < posIter; iter++) {
+      if (this.solver.solvePositions()) break;
     }
 
     // Phase 5: Clear force accumulators

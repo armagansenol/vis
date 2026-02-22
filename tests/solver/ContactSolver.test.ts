@@ -246,8 +246,8 @@ describe('ContactSolver', () => {
     });
   });
 
-  describe('Baumgarte position correction', () => {
-    it('should produce positive bias for penetrating contact pushing bodies apart', () => {
+  describe('Position correction', () => {
+    it('should move penetrating bodies apart via position correction', () => {
       // Deep penetration
       const ball = makeDynamicCircle(0, 0.4, 0.5, { vx: 0, vy: 0 });
       const floor = makeStaticCircle(0, -10, 10);
@@ -261,15 +261,19 @@ describe('ContactSolver', () => {
       const dt = 1 / 60;
       solver.preStep([manifold], dt);
 
-      // After solve iterations, the ball should get a positive y velocity correction
-      // (pushed away from the floor) even with zero initial velocity
+      // Velocity solve should NOT add position correction velocity
       for (let i = 0; i < DEFAULT_SOLVER_CONSTANTS.velocityIterations; i++) {
         solver.solve();
       }
 
-      // Ball should be pushed upward (away from floor)
+      const posBefore = ball.position.y;
+
+      // Position correction should directly move ball upward
+      solver.solvePositions();
+
+      // Ball should be moved upward (away from floor)
       // Normal is (0, -1) from ball to floor, so correction pushes ball in -normal = (0, 1)
-      expect(ball.velocity.y).toBeGreaterThan(0);
+      expect(ball.position.y).toBeGreaterThan(posBefore);
     });
   });
 

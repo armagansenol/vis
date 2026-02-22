@@ -16,11 +16,12 @@ interface DemoScene {
   tweaks: TweakDef[];
 }
 
-export function stackingScene(): DemoScene {
+export function stackingScene(): DemoScene & { worldSettings?: Record<string, unknown> } {
   let currentWorld: World | null = null;
 
   return {
     name: 'Stacking Boxes',
+    worldSettings: { velocityIterations: 16, positionIterations: 8 },
     create(world: World) {
       currentWorld = world;
 
@@ -48,12 +49,12 @@ export function stackingScene(): DemoScene {
       });
       world.addBody(rightWall);
 
-      // 10 stacked boxes
+      // 10 stacked boxes — placed in near-contact for stable settling
       for (let i = 0; i < 10; i++) {
         const xOffset = (Math.random() - 0.5) * 0.02;
         const box = new Body({
-          shape: Polygon.box(0.9, 0.9, { friction: 0.4, restitution: 0.05 }),
-          position: new Vec2(xOffset, 0.25 + 0.95 * i),
+          shape: Polygon.box(0.9, 0.9, { friction: 0.6, restitution: 0.0 }),
+          position: new Vec2(xOffset, 0.45 + 0.91 * i),
         });
         box.prevPosition.x = box.position.x;
         box.prevPosition.y = box.position.y;

@@ -241,24 +241,47 @@ export function polygonVsPolygon(
     return null;
   }
 
+  // Deduplicate clipped points — Sutherland-Hodgman can produce duplicates
+  // when the input is a 2-vertex "polygon" (line segment treated as a loop).
+  const EPS_SQ = 1e-8;
+  const unique: Vec2[] = [];
+  for (const p of clipped) {
+    let isDup = false;
+    for (const u of unique) {
+      const dx = p.x - u.x;
+      const dy = p.y - u.y;
+      if (dx * dx + dy * dy < EPS_SQ) {
+        isDup = true;
+        break;
+      }
+    }
+    if (!isDup) unique.push(p);
+  }
+
   // Keep only points behind the reference face plane
   const refFaceOffset = refNormal.dot(refV1);
   const contacts: ContactPoint[] = [];
 
-  for (let i = 0; i < clipped.length; i++) {
-    const depth = refNormal.dot(clipped[i]) - refFaceOffset;
+  for (let i = 0; i < unique.length; i++) {
+    const depth = refNormal.dot(unique[i]) - refFaceOffset;
     // depth < 0 means behind the reference face (penetrating)
     // We negate because our convention is positive depth = overlap
     if (depth <= 0) {
       const incVertIdx = incEdgeIdx + (i % 2);
       contacts.push({
-        point: clipped[i],
+        point: unique[i],
         depth: -depth,
         id: (refEdgeIdx << 8) | (incVertIdx % incVerts.length),
         normalImpulse: 0,
         tangentImpulse: 0,
       });
     }
+  }
+
+  // Cap at 2 contacts per manifold (standard for 2D physics)
+  if (contacts.length > 2) {
+    contacts.sort((a, b) => b.depth - a.depth);
+    contacts.length = 2;
   }
 
   if (contacts.length === 0) {

@@ -120,12 +120,13 @@ export class ContactSolver {
         // Normal component of relative velocity
         const vn = dvx * nx + dvy * ny;
 
-        // Bias = Baumgarte position correction + restitution bounce
+        // Velocity bias: small Baumgarte stabilization + restitution bounce
+        // (bulk position correction is handled separately in solvePositions)
         let bias = 0;
-        // Position correction: push overlapping bodies apart
+        // Small Baumgarte to prevent drift during velocity solving
         const penetration = contact.depth - slop;
         if (penetration > 0) {
-          bias += (beta * invDt) * penetration;
+          bias += (beta * 0.5 * invDt) * penetration;
         }
         // Restitution bounce: only if approaching above threshold
         if (-vn > restitutionSlop) {
@@ -240,5 +241,74 @@ export class ContactSolver {
       bodyB.velocity.y += pty * invMassB;
       bodyB.angularVelocity += (cc.rBx * pty - cc.rBy * ptx) * invInertiaB;
     }
+  }
+
+  /**
+   * One iteration of position correction (NGS-style linear projection).
+   *
+   * Directly moves body positions to reduce penetration. Called after
+   * velocity solving and position integration. Does NOT inject velocity,
+   * preventing energy accumulation that causes stack instability.
+   *
+   * @returns true if all contacts are within tolerance.
+   */
+  solvePositions(): boolean {
+    const slop = this.constants.penetrationSlop;
+    const beta = this.constants.baumgarteFactor;
+    const maxCorrection = this.constants.maxLinearCorrection;
+    let allResolved = true;
+
+    for (let i = 0; i < this.constraints.length; i++) {
+      const cc = this.constraints[i];
+      const bodyA = cc.bodyA;
+      const bodyB = cc.bodyB;
+
+      const invMassA = bodyA.invMass;
+      const invMassB = bodyB.invMass;
+      const invInertiaA = bodyA.invInertia;
+      const invInertiaB = bodyB.invInertia;
+
+      // Recompute lever arms from current positions
+      const rAx = cc.contact.point.x - bodyA.position.x;
+      const rAy = cc.contact.point.y - bodyA.position.y;
+      const rBx = cc.contact.point.x - bodyB.position.x;
+      const rBy = cc.contact.point.y - bodyB.position.y;
+
+      // Estimate current separation along normal
+      // separation < 0 means overlapping
+      const rAn = rAx * cc.ny - rAy * cc.nx; // rA cross normal
+      const rBn = rBx * cc.ny - rBy * cc.nx; // rB cross normal
+
+      // Effective mass for normal direction (recomputed with current lever arms)
+      const kNormal = invMassA + invMassB +
+        invInertiaA * rAn * rAn +
+        invInertiaB * rBn * rBn;
+
+      if (kNormal <= 0) continue;
+
+      // Approximate separation: negative depth means overlap
+      const separation = -cc.contact.depth + slop;
+      if (separation >= 0) continue;
+
+      allResolved = false;
+
+      // Position correction: clamp to avoid overshooting
+      const correction = Math.min(
+        Math.max(beta * (-separation), 0),
+        maxCorrection,
+      );
+      const impulse = correction / kNormal;
+
+      // Apply position correction (NO velocity change)
+      bodyA.position.x -= cc.nx * impulse * invMassA;
+      bodyA.position.y -= cc.ny * impulse * invMassA;
+      bodyA.angle -= rAn * impulse * invInertiaA;
+
+      bodyB.position.x += cc.nx * impulse * invMassB;
+      bodyB.position.y += cc.ny * impulse * invMassB;
+      bodyB.angle += rBn * impulse * invInertiaB;
+    }
+
+    return allResolved;
   }
 }

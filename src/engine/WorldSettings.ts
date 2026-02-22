@@ -15,6 +15,8 @@ export interface WorldSettings {
   maxSteps: number;
   /** Velocity constraint solver iterations per step. Default: 8. */
   velocityIterations: number;
+  /** Position correction iterations per step. Default: 4. */
+  positionIterations: number;
   /** Baumgarte stabilization factor. Default: 0.2. */
   baumgarteFactor: number;
   /** Penetration slop (dead-zone for position correction). Default: 0.01. */
@@ -30,6 +32,7 @@ export const DEFAULT_WORLD_SETTINGS: WorldSettings = {
   fixedDt: 1 / 60,
   maxSteps: 5,
   velocityIterations: 8,
+  positionIterations: 4,
   baumgarteFactor: 0.2,
   penetrationSlop: 0.01,
   restitutionSlop: 0.5,
