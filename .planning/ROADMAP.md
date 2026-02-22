@@ -94,10 +94,11 @@ Plans:
   1. All body shapes (circles, boxes, convex polygons) render correctly at their physics positions and rotations
   2. Debug mode displays AABBs, contact points, contact normals, and constraint connections as overlays
   3. Bodies move smoothly on screen at any monitor refresh rate due to render interpolation between physics steps
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md — Physics data plumbing + core Canvas 2D renderer with interpolation
+- [ ] 05-02-PLAN.md — Debug overlays (AABBs, contacts, normals, constraints) + visual verification
 
 ### Phase 6: Demo Scenes
 **Goal**: Four canonical demos validate the full engine and serve as both integration tests and library showcase
@@ -126,5 +127,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Collision Detection | 3/3 | Complete | 2026-02-21 |
 | 3. Solver and Engine Loop | 0/2 | Not started | - |
 | 4. Constraints | 0/2 | Not started | - |
-| 5. Renderer | 0/1 | Not started | - |
+| 5. Renderer | 0/2 | Not started | - |
 | 6. Demo Scenes | 0/2 | Not started | - |
