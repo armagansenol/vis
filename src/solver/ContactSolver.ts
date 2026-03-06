@@ -84,7 +84,7 @@ export class ContactSolver {
       for (let c = 0; c < manifold.contacts.length; c++) {
         const contact = manifold.contacts[c];
 
-        // Lever arms
+        // Lever arms (world space)
         const rAx = contact.point.x - bodyA.position.x;
         const rAy = contact.point.y - bodyA.position.y;
         const rBx = contact.point.x - bodyB.position.x;
@@ -154,21 +154,28 @@ export class ContactSolver {
         };
 
         this.constraints.push(constraint);
-
-        // Warm-start: apply cached impulses from previous frame
-        const pnx = contact.normalImpulse * nx + contact.tangentImpulse * tx;
-        const pny = contact.normalImpulse * ny + contact.tangentImpulse * ty;
-
-        // Apply to bodyA (subtract)
-        bodyA.velocity.x -= pnx * invMassA;
-        bodyA.velocity.y -= pny * invMassA;
-        bodyA.angularVelocity -= (rAx * pny - rAy * pnx) * invInertiaA;
-
-        // Apply to bodyB (add)
-        bodyB.velocity.x += pnx * invMassB;
-        bodyB.velocity.y += pny * invMassB;
-        bodyB.angularVelocity += (rBx * pny - rBy * pnx) * invInertiaB;
       }
+    }
+
+    // Sort constraints so that lower contacts are solved first (bottom-up).
+    // This dramatically improves sequential impulse convergence for stacks:
+    // solving the floor contact first provides a stable base for contacts above.
+    this.constraints.sort((a, b) => a.contact.point.y - b.contact.point.y);
+
+    // Warm-start: apply cached impulses from previous frame (after sorting)
+    for (let i = 0; i < this.constraints.length; i++) {
+      const cc = this.constraints[i];
+      const contact = cc.contact;
+      const pnx = contact.normalImpulse * cc.nx + contact.tangentImpulse * cc.tx;
+      const pny = contact.normalImpulse * cc.ny + contact.tangentImpulse * cc.ty;
+
+      cc.bodyA.velocity.x -= pnx * cc.bodyA.invMass;
+      cc.bodyA.velocity.y -= pny * cc.bodyA.invMass;
+      cc.bodyA.angularVelocity -= (cc.rAx * pny - cc.rAy * pnx) * cc.bodyA.invInertia;
+
+      cc.bodyB.velocity.x += pnx * cc.bodyB.invMass;
+      cc.bodyB.velocity.y += pny * cc.bodyB.invMass;
+      cc.bodyB.angularVelocity += (cc.rBx * pny - cc.rBy * pnx) * cc.bodyB.invInertia;
     }
   }
 
@@ -260,7 +267,7 @@ export class ContactSolver {
    */
   solvePositions(): boolean {
     const slop = this.constants.penetrationSlop;
-    const beta = this.constants.baumgarteFactor;
+    const beta = this.constants.positionCorrectionFactor;
     const maxCorrection = this.constants.maxLinearCorrection;
     let allResolved = true;
 
@@ -280,10 +287,9 @@ export class ContactSolver {
       const rBx = cc.contact.point.x - bodyB.position.x;
       const rBy = cc.contact.point.y - bodyB.position.y;
 
-      // Estimate current separation along normal
-      // separation < 0 means overlapping
-      const rAn = rAx * cc.ny - rAy * cc.nx; // rA cross normal
-      const rBn = rBx * cc.ny - rBy * cc.nx; // rB cross normal
+      // rA/rB cross normal (for angular effective mass)
+      const rAn = rAx * cc.ny - rAy * cc.nx;
+      const rBn = rBx * cc.ny - rBy * cc.nx;
 
       // Effective mass for normal direction (recomputed with current lever arms)
       const kNormal = invMassA + invMassB +
@@ -292,7 +298,9 @@ export class ContactSolver {
 
       if (kNormal <= 0) continue;
 
-      // Approximate separation: negative depth means overlap
+      // Use original depth (stale across iterations). This intentionally
+      // overcorrects across multiple iterations, pre-compensating for the
+      // next frame's gravity-induced penetration — critical for stack stability.
       const separation = -cc.contact.depth + slop;
       if (separation >= 0) continue;
 

@@ -27,6 +27,10 @@ export interface BodyOptions {
   categoryBits?: number;
   /** Collision mask bitmask — which categories this body collides with. Default: 0xFFFF. */
   maskBits?: number;
+  /** If false, this body will never sleep even when world sleeping is enabled. Default: true. */
+  allowSleep?: boolean;
+  /** If true, use continuous collision detection to prevent tunneling. Default: false. */
+  isBullet?: boolean;
 }
 
 /**
@@ -76,6 +80,19 @@ export class Body {
   /** Previous angle for render interpolation. Updated by World before each physics step. */
   prevAngle: number;
 
+  // ---------------------------------------------------------------------------
+  // Sleep state
+  // ---------------------------------------------------------------------------
+
+  /** If false, this body will never sleep. */
+  allowSleep: boolean;
+  /** Whether this body is currently sleeping. Sleeping bodies skip integration and collision response. */
+  isSleeping: boolean;
+  /** Time (seconds) this body has been below sleep velocity thresholds. Managed by World. */
+  sleepTimer: number;
+  /** If true, use continuous collision detection to prevent tunneling through thin objects. */
+  isBullet: boolean;
+
   /** Reset the auto-incrementing ID counter. Use in tests for deterministic IDs. */
   static resetIdCounter(): void {
     Body.nextId = 0;
@@ -93,6 +110,10 @@ export class Body {
     this.isSensor = options.isSensor ?? false;
     this.categoryBits = options.categoryBits ?? 0x0001;
     this.maskBits = options.maskBits ?? 0xFFFF;
+    this.allowSleep = options.allowSleep ?? true;
+    this.isSleeping = false;
+    this.sleepTimer = 0;
+    this.isBullet = options.isBullet ?? false;
 
     this.force = Vec2.zero();
     this.torque = 0;
@@ -111,6 +132,28 @@ export class Body {
   }
 
   // ---------------------------------------------------------------------------
+  // Sleep control
+  // ---------------------------------------------------------------------------
+
+  /** Wake this body from sleep, resetting the sleep timer. */
+  wake(): void {
+    if (this.isSleeping) {
+      this.isSleeping = false;
+    }
+    this.sleepTimer = 0;
+  }
+
+  /** Put this body to sleep. Zeros velocity, angular velocity, and forces. */
+  sleep(): void {
+    this.isSleeping = true;
+    this.sleepTimer = 0;
+    this.velocity.set(0, 0);
+    this.angularVelocity = 0;
+    this.force.set(0, 0);
+    this.torque = 0;
+  }
+
+  // ---------------------------------------------------------------------------
   // Force / impulse application
   // ---------------------------------------------------------------------------
 
@@ -119,9 +162,12 @@ export class Body {
    *
    * If a world-space point is provided, the force generates torque about the
    * body center. Without a point, the force is applied at the center of mass
-   * (no torque).
+   * (no torque). Wakes the body if sleeping.
    */
   applyForce(force: Vec2, worldPoint?: Vec2): void {
+    if (this.type !== BodyType.Dynamic) return;
+    this.wake();
+
     this.force.x += force.x;
     this.force.y += force.y;
 
@@ -133,9 +179,12 @@ export class Body {
   }
 
   /**
-   * Shorthand: apply force at center of mass (no torque).
+   * Shorthand: apply force at center of mass (no torque). Wakes the body if sleeping.
    */
   applyForceAtCenter(force: Vec2): void {
+    if (this.type !== BodyType.Dynamic) return;
+    this.wake();
+
     this.force.x += force.x;
     this.force.y += force.y;
   }
@@ -144,8 +193,12 @@ export class Body {
    * Apply an impulse (instant velocity change) to this body.
    *
    * If a world-space point is provided, angular velocity also changes.
+   * Wakes the body if sleeping.
    */
   applyImpulse(impulse: Vec2, worldPoint?: Vec2): void {
+    if (this.type !== BodyType.Dynamic) return;
+    this.wake();
+
     this.velocity.x += impulse.x * this.invMass;
     this.velocity.y += impulse.y * this.invMass;
 

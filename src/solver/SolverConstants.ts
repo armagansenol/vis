@@ -14,6 +14,8 @@ export interface SolverConstants {
   restitutionSlop: number;
   /** Maximum linear position correction per iteration. */
   maxLinearCorrection: number;
+  /** Position correction factor (higher than baumgarteFactor for aggressive overlap resolution). */
+  positionCorrectionFactor: number;
 }
 
 export const DEFAULT_SOLVER_CONSTANTS: SolverConstants = {
@@ -23,4 +25,5 @@ export const DEFAULT_SOLVER_CONSTANTS: SolverConstants = {
   penetrationSlop: 0.01,
   restitutionSlop: 0.5,
   maxLinearCorrection: 0.2,
+  positionCorrectionFactor: 0.2,
 };

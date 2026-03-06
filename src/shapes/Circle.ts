@@ -63,12 +63,17 @@ export class Circle implements Shape {
 
   computeAABB(position: Vec2, angle: number): AABB {
     // World-space center = position + rotate(offset, angle)
-    const rot = Mat2.fromAngle(angle);
-    const worldCenter = rot.mulVec2(this.offset).add(position);
+    // Inline rotation to avoid Mat2 + Vec2 allocations on this hot path
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const ox = this.offset.x;
+    const oy = this.offset.y;
+    const cx = position.x + (c * ox - s * oy);
+    const cy = position.y + (s * ox + c * oy);
     const r = this.radius;
     return new AABB(
-      new Vec2(worldCenter.x - r, worldCenter.y - r),
-      new Vec2(worldCenter.x + r, worldCenter.y + r),
+      new Vec2(cx - r, cy - r),
+      new Vec2(cx + r, cy + r),
     );
   }
 }

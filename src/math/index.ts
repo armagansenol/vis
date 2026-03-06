@@ -9,4 +9,5 @@ export {
   degToRad,
   radToDeg,
   randomRange,
+  lerpAngle,
 } from './utils.js';

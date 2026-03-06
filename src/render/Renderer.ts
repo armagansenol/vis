@@ -3,7 +3,7 @@ import { BodyType } from '../dynamics/BodyType.js';
 import { ShapeType } from '../shapes/Shape.js';
 import { type Circle } from '../shapes/Circle.js';
 import { type Polygon } from '../shapes/Polygon.js';
-import { lerp } from '../math/utils.js';
+import { lerp, lerpAngle } from '../math/utils.js';
 import {
   type RenderOptions,
   DEFAULT_RENDER_OPTIONS,
@@ -115,7 +115,7 @@ export class Renderer {
       } else {
         renderX = lerp(body.prevPosition.x, body.position.x, alpha);
         renderY = lerp(body.prevPosition.y, body.position.y, alpha);
-        renderAngle = lerp(body.prevAngle, body.angle, alpha);
+        renderAngle = lerpAngle(body.prevAngle, body.angle, alpha);
       }
 
       // Set fill/stroke colors

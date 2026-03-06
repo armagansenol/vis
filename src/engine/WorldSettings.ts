@@ -27,6 +27,14 @@ export interface WorldSettings {
   cellSize: number;
   /** Maximum translation per step in world units. Clamps velocity to prevent tunneling. Default: 2. */
   maxTranslation: number;
+  /** Enable body sleeping. Default: true. */
+  allowSleeping: boolean;
+  /** Linear speed threshold below which a body can sleep (m/s). Default: 0.05. */
+  sleepLinearThreshold: number;
+  /** Angular speed threshold below which a body can sleep (rad/s). Default: 0.05. */
+  sleepAngularThreshold: number;
+  /** Time a body must remain below thresholds before sleeping (seconds). Default: 0.5. */
+  sleepTimeThreshold: number;
 }
 
 export const DEFAULT_WORLD_SETTINGS: WorldSettings = {
@@ -40,4 +48,8 @@ export const DEFAULT_WORLD_SETTINGS: WorldSettings = {
   restitutionSlop: 0.5,
   cellSize: 2,
   maxTranslation: 2,
+  allowSleeping: true,
+  sleepLinearThreshold: 0.05,
+  sleepAngularThreshold: 0.05,
+  sleepTimeThreshold: 0.5,
 };

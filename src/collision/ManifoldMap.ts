@@ -20,9 +20,18 @@ export interface ManifoldUpdateResult {
  * system provides new manifolds and the map determines which pairs began,
  * ended, or persisted. For persisting pairs, cached impulse values are
  * transferred from old contacts to new contacts matched by feature ID.
+ *
+ * Hot-path optimized: swaps two maps instead of creating a new one each frame,
+ * and reuses result arrays.
  */
 export class ManifoldMap {
-  private manifolds: Map<string, Manifold> = new Map();
+  private current: Map<string, Manifold> = new Map();
+  private previous: Map<string, Manifold> = new Map();
+
+  // Reusable result arrays — cleared each frame, avoids allocation
+  private readonly _began: Manifold[] = [];
+  private readonly _ended: Manifold[] = [];
+  private readonly _active: Manifold[] = [];
 
   /**
    * Update the cache with this frame's manifolds.
@@ -31,32 +40,43 @@ export class ManifoldMap {
    * @returns began/ended/active classification for event dispatch.
    */
   update(newManifolds: Manifold[]): ManifoldUpdateResult {
+    // Swap maps: previous becomes the old frame, current will be rebuilt
+    const temp = this.previous;
+    this.previous = this.current;
+    this.current = temp;
+    this.current.clear();
+
+    const began = this._began;
+    const ended = this._ended;
+    const active = this._active;
+    began.length = 0;
+    ended.length = 0;
+    active.length = 0;
+
     // Build new map
-    const newMap = new Map<string, Manifold>();
-    for (const m of newManifolds) {
+    for (let i = 0; i < newManifolds.length; i++) {
+      const m = newManifolds[i];
       const key = pairKey(m.bodyA.id, m.bodyB.id);
-      newMap.set(key, m);
+      this.current.set(key, m);
     }
 
-    // Began: in new but not in old
-    const began: Manifold[] = [];
-    for (const [key, m] of newMap) {
-      if (!this.manifolds.has(key)) {
+    // Began: in current but not in previous
+    for (const [key, m] of this.current) {
+      if (!this.previous.has(key)) {
         began.push(m);
       }
     }
 
-    // Ended: in old but not in new
-    const ended: Manifold[] = [];
-    for (const [key, m] of this.manifolds) {
-      if (!newMap.has(key)) {
+    // Ended: in previous but not in current
+    for (const [key, m] of this.previous) {
+      if (!this.current.has(key)) {
         ended.push(m);
       }
     }
 
     // Warm-start transfer: for pairs in both maps, copy impulses by feature ID
-    for (const [key, newManifold] of newMap) {
-      const oldManifold = this.manifolds.get(key);
+    for (const [key, newManifold] of this.current) {
+      const oldManifold = this.previous.get(key);
       if (oldManifold === undefined) continue;
 
       for (const newContact of newManifold.contacts) {
@@ -70,18 +90,17 @@ export class ManifoldMap {
       }
     }
 
-    // Replace old map with new
-    this.manifolds = newMap;
+    // Build active list from current map values
+    for (const m of this.current.values()) {
+      active.push(m);
+    }
 
-    return {
-      began,
-      ended,
-      active: Array.from(newMap.values()),
-    };
+    return { began, ended, active };
   }
 
   /** Clear all cached manifolds. */
   clear(): void {
-    this.manifolds.clear();
+    this.current.clear();
+    this.previous.clear();
   }
 }

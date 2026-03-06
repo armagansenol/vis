@@ -1,6 +1,7 @@
 import { Body } from '../dynamics/Body.js';
 import { type Manifold } from './Manifold.js';
 import { pairKey } from './Manifold.js';
+import { type Broadphase } from './Broadphase.js';
 import { SpatialHash } from './SpatialHash.js';
 import { shouldCollide } from './CollisionFilter.js';
 import { detectNarrowphase } from './narrowphase.js';
@@ -17,23 +18,27 @@ import {
 export interface CollisionSystemOptions {
   /** Cell size for the spatial hash broadphase. Default: 2. */
   cellSize?: number;
+  /** Custom broadphase implementation. Default: SpatialHash. */
+  broadphase?: Broadphase;
 }
 
 /**
  * Full collision pipeline orchestrator.
  *
- * Runs broadphase (spatial hash) -> narrowphase -> manifold persistence ->
- * event dispatch in a single `detect(bodies)` call. Returns active manifolds
- * for the solver.
+ * Runs broadphase -> narrowphase -> manifold persistence -> event dispatch
+ * in a single `detect(bodies)` call. Returns active manifolds for the solver.
+ *
+ * The broadphase is pluggable via the {@link Broadphase} interface.
+ * Default: {@link SpatialHash}.
  */
 export class CollisionSystem {
-  private readonly spatialHash: SpatialHash;
+  readonly broadphase: Broadphase;
   private readonly manifoldMap: ManifoldMap;
   private readonly eventDispatcher: EventDispatcher;
   private readonly pairExclusions: Set<string>;
 
   constructor(options?: CollisionSystemOptions) {
-    this.spatialHash = new SpatialHash(options?.cellSize);
+    this.broadphase = options?.broadphase ?? new SpatialHash(options?.cellSize);
     this.manifoldMap = new ManifoldMap();
     this.eventDispatcher = new EventDispatcher();
     this.pairExclusions = new Set();
@@ -55,15 +60,16 @@ export class CollisionSystem {
    */
   detect(bodies: Body[]): Manifold[] {
     // Step 1: Clear and populate broadphase
-    this.spatialHash.clear();
+    const bp = this.broadphase;
+    bp.clear();
     for (const body of bodies) {
       const aabb = body.shape.computeAABB(body.position, body.angle);
-      this.spatialHash.insert(body, aabb);
+      bp.insert(body, aabb);
     }
 
     // Step 2-3: Query candidate pairs with filter + exclusions
     const exclusions = this.pairExclusions;
-    const pairs = this.spatialHash.queryPairs((a, b) => {
+    const pairs = bp.queryPairs((a, b) => {
       if (!shouldCollide(a, b)) return false;
       if (exclusions.size > 0 && exclusions.has(pairKey(a.id, b.id))) return false;
       return true;

@@ -1,5 +1,4 @@
 import { Vec2 } from '../math/Vec2.js';
-import { Mat2 } from '../math/Mat2.js';
 import { Body } from '../dynamics/Body.js';
 import { ShapeType } from '../shapes/Shape.js';
 import { Circle } from '../shapes/Circle.js';
@@ -16,21 +15,33 @@ import { polygonVsPolygon } from './sat.js';
  *
  * Returns a manifold with a single contact point, or null if separated.
  * Normal points from bodyA toward bodyB.
+ *
+ * Hot-path optimized: uses inline rotation math instead of Mat2 allocations.
  */
 export function circleVsCircle(bodyA: Body, bodyB: Body): Manifold | null {
   const circleA = bodyA.shape as Circle;
   const circleB = bodyB.shape as Circle;
 
-  // Compute world-space centers accounting for shape offset rotated by body angle
-  const rotA = Mat2.fromAngle(bodyA.angle);
-  const rotB = Mat2.fromAngle(bodyB.angle);
-  const centerA = Vec2.add(bodyA.position, rotA.mulVec2(circleA.offset));
-  const centerB = Vec2.add(bodyB.position, rotB.mulVec2(circleB.offset));
+  // Compute world-space centers with inline rotation (avoids Mat2 + Vec2 allocs)
+  const cosA = Math.cos(bodyA.angle);
+  const sinA = Math.sin(bodyA.angle);
+  const oax = circleA.offset.x;
+  const oay = circleA.offset.y;
+  const cax = bodyA.position.x + (cosA * oax - sinA * oay);
+  const cay = bodyA.position.y + (sinA * oax + cosA * oay);
+
+  const cosB = Math.cos(bodyB.angle);
+  const sinB = Math.sin(bodyB.angle);
+  const obx = circleB.offset.x;
+  const oby = circleB.offset.y;
+  const cbx = bodyB.position.x + (cosB * obx - sinB * oby);
+  const cby = bodyB.position.y + (sinB * obx + cosB * oby);
 
   const sumRadii = circleA.radius + circleB.radius;
-  const distSq = Vec2.distanceSquared(centerA, centerB);
+  const dx = cbx - cax;
+  const dy = cby - cay;
+  const distSq = dx * dx + dy * dy;
 
-  // No overlap if distance >= sum of radii (touching = no penetration)
   if (distSq >= sumRadii * sumRadii) {
     return null;
   }
@@ -38,26 +49,30 @@ export function circleVsCircle(bodyA: Body, bodyB: Body): Manifold | null {
   const dist = Math.sqrt(distSq);
 
   // Normal from A toward B
-  let normal: Vec2;
+  let nx: number;
+  let ny: number;
   if (dist < 1e-10) {
-    // Coincident centers — fallback normal
-    normal = new Vec2(1, 0);
+    nx = 1;
+    ny = 0;
   } else {
-    normal = Vec2.sub(centerB, centerA).scale(1 / dist);
+    const invDist = 1 / dist;
+    nx = dx * invDist;
+    ny = dy * invDist;
   }
 
   const depth = sumRadii - dist;
 
   // Contact point on surface of A toward B
-  const contactPoint = Vec2.add(centerA, normal.clone().scale(circleA.radius));
+  const cpx = cax + nx * circleA.radius;
+  const cpy = cay + ny * circleA.radius;
 
   const materials = mixMaterials(bodyA.shape, bodyB.shape);
 
   return {
     bodyA,
     bodyB,
-    normal,
-    contacts: [{ point: contactPoint, depth, id: 0, normalImpulse: 0, tangentImpulse: 0 }],
+    normal: new Vec2(nx, ny),
+    contacts: [{ point: new Vec2(cpx, cpy), depth, id: 0, normalImpulse: 0, tangentImpulse: 0 }],
     friction: materials.friction,
     restitution: materials.restitution,
     isSensor: bodyA.isSensor || bodyB.isSensor,
@@ -77,6 +92,8 @@ export function circleVsCircle(bodyA: Body, bodyB: Body): Manifold | null {
  * 3. Determine if circle overlaps
  *
  * Normal points from circleBody toward polyBody.
+ *
+ * Hot-path optimized: uses inline rotation, scalar math for transforms.
  */
 export function circleVsPolygon(
   circleBody: Body,
@@ -85,23 +102,30 @@ export function circleVsPolygon(
   const circle = circleBody.shape as Circle;
   const polygon = polyBody.shape as Polygon;
 
-  // Compute world-space circle center
-  const rotCircle = Mat2.fromAngle(circleBody.angle);
-  const circleCenter = Vec2.add(
-    circleBody.position,
-    rotCircle.mulVec2(circle.offset),
-  );
+  // Compute world-space circle center (inline rotation)
+  const cosC = Math.cos(circleBody.angle);
+  const sinC = Math.sin(circleBody.angle);
+  const cox = circle.offset.x;
+  const coy = circle.offset.y;
+  const circleCx = circleBody.position.x + (cosC * cox - sinC * coy);
+  const circleCy = circleBody.position.y + (sinC * cox + cosC * coy);
+
+  // Polygon rotation (and inverse = transpose)
+  const cosP = Math.cos(polyBody.angle);
+  const sinP = Math.sin(polyBody.angle);
 
   // Transform circle center into polygon's local space
-  const rotPoly = Mat2.fromAngle(polyBody.angle);
-  const rotPolyInv = Mat2.fromAngle(polyBody.angle);
-  rotPolyInv.transpose(); // Transpose = inverse for rotation matrices
+  // Inverse rotation (transpose): [cos, sin; -sin, cos] * (circleCenter - polyPos)
+  const dpx = circleCx - polyBody.position.x;
+  const dpy = circleCy - polyBody.position.y;
+  const localCx = cosP * dpx + sinP * dpy;
+  const localCy = -sinP * dpx + cosP * dpy;
 
-  const localCenter = rotPolyInv.mulVec2(
-    Vec2.sub(circleCenter, polyBody.position),
-  );
   // Account for polygon offset
-  const localCenterRel = Vec2.sub(localCenter, polygon.offset);
+  const pox = polygon.offset.x;
+  const poy = polygon.offset.y;
+  const localRelX = localCx - pox;
+  const localRelY = localCy - poy;
 
   const verts = polygon.vertices;
   const normals = polygon.normals;
@@ -113,10 +137,8 @@ export function circleVsPolygon(
   let bestEdge = 0;
 
   for (let i = 0; i < n; i++) {
-    // Signed distance from circle center to edge plane
-    const sep = normals[i].dot(Vec2.sub(localCenterRel, verts[i]));
+    const sep = normals[i].x * (localRelX - verts[i].x) + normals[i].y * (localRelY - verts[i].y);
     if (sep > radius) {
-      // Circle is fully outside this edge
       return null;
     }
     if (sep > bestSep) {
@@ -125,41 +147,34 @@ export function circleVsPolygon(
     }
   }
 
-  // Get the two vertices of the best edge
   const v1 = verts[bestEdge];
   const v2 = verts[(bestEdge + 1) % n];
 
   // Check if center is inside polygon (all separations are negative)
   if (bestSep < 1e-10) {
-    // Center is inside polygon — push out along best edge normal
-    const localNormal = normals[bestEdge];
+    const lnx = normals[bestEdge].x;
+    const lny = normals[bestEdge].y;
     const depth = radius - bestSep;
 
     // Contact point: circle center projected onto edge
-    const localContact = Vec2.add(
-      localCenterRel,
-      localNormal.clone().scale(-bestSep),
-    );
+    const lcx = localRelX - lnx * bestSep;
+    const lcy = localRelY - lny * bestSep;
 
     // Transform back to world space
-    const worldContact = Vec2.add(
-      polyBody.position,
-      rotPoly.mulVec2(Vec2.add(localContact, polygon.offset)),
-    );
-    const worldNormal = rotPoly.mulVec2(localNormal.clone());
+    const wcx = polyBody.position.x + (cosP * (lcx + pox) - sinP * (lcy + poy));
+    const wcy = polyBody.position.y + (sinP * (lcx + pox) + cosP * (lcy + poy));
 
-    // Normal should point from circleBody toward polyBody
-    // In this case the polygon's outward normal points away from the polygon
-    // We want normal from circle toward polygon, so negate the polygon's outward normal
-    worldNormal.negate();
+    // Normal from circle toward polygon: negate polygon's outward normal
+    const wnx = -(cosP * lnx - sinP * lny);
+    const wny = -(sinP * lnx + cosP * lny);
 
     const materials = mixMaterials(circleBody.shape, polyBody.shape);
 
     return {
       bodyA: circleBody,
       bodyB: polyBody,
-      normal: worldNormal,
-      contacts: [{ point: worldContact, depth, id: bestEdge, normalImpulse: 0, tangentImpulse: 0 }],
+      normal: new Vec2(wnx, wny),
+      contacts: [{ point: new Vec2(wcx, wcy), depth, id: bestEdge, normalImpulse: 0, tangentImpulse: 0 }],
       friction: materials.friction,
       restitution: materials.restitution,
       isSensor: circleBody.isSensor || polyBody.isSensor,
@@ -167,69 +182,79 @@ export function circleVsPolygon(
   }
 
   // Determine Voronoi region: vertex1, vertex2, or edge interior
-  const edge = Vec2.sub(v2, v1);
-  const d1 = Vec2.sub(localCenterRel, v1);
-  const u = edge.dot(d1);
-  const edgeLenSq = edge.lengthSquared();
+  const edgeX = v2.x - v1.x;
+  const edgeY = v2.y - v1.y;
+  const d1x = localRelX - v1.x;
+  const d1y = localRelY - v1.y;
+  const u = edgeX * d1x + edgeY * d1y;
+  const edgeLenSq = edgeX * edgeX + edgeY * edgeY;
 
-  let localNormal: Vec2;
-  let localContact: Vec2;
+  let lnx: number;
+  let lny: number;
+  let lcx: number;
+  let lcy: number;
   let depth: number;
   let featureId: number;
 
   if (u <= 0) {
     // Voronoi region of vertex 1
-    const distSq = Vec2.distanceSquared(localCenterRel, v1);
-    if (distSq > radius * radius) {
-      return null;
-    }
+    const distSq = (localRelX - v1.x) * (localRelX - v1.x) + (localRelY - v1.y) * (localRelY - v1.y);
+    if (distSq > radius * radius) return null;
     const dist = Math.sqrt(distSq);
-    localNormal =
-      dist > 1e-10
-        ? Vec2.sub(localCenterRel, v1).scale(1 / dist)
-        : new Vec2(1, 0);
+    if (dist > 1e-10) {
+      const invDist = 1 / dist;
+      lnx = (localRelX - v1.x) * invDist;
+      lny = (localRelY - v1.y) * invDist;
+    } else {
+      lnx = 1;
+      lny = 0;
+    }
     depth = radius - dist;
-    localContact = v1.clone();
-    featureId = bestEdge; // vertex index
+    lcx = v1.x;
+    lcy = v1.y;
+    featureId = bestEdge;
   } else if (u >= edgeLenSq) {
     // Voronoi region of vertex 2
-    const distSq = Vec2.distanceSquared(localCenterRel, v2);
-    if (distSq > radius * radius) {
-      return null;
-    }
+    const distSq = (localRelX - v2.x) * (localRelX - v2.x) + (localRelY - v2.y) * (localRelY - v2.y);
+    if (distSq > radius * radius) return null;
     const dist = Math.sqrt(distSq);
-    localNormal =
-      dist > 1e-10
-        ? Vec2.sub(localCenterRel, v2).scale(1 / dist)
-        : new Vec2(1, 0);
+    if (dist > 1e-10) {
+      const invDist = 1 / dist;
+      lnx = (localRelX - v2.x) * invDist;
+      lny = (localRelY - v2.y) * invDist;
+    } else {
+      lnx = 1;
+      lny = 0;
+    }
     depth = radius - dist;
-    localContact = v2.clone();
-    featureId = (bestEdge + 1) % n; // vertex index
+    lcx = v2.x;
+    lcy = v2.y;
+    featureId = (bestEdge + 1) % n;
   } else {
     // Edge interior region
-    localNormal = normals[bestEdge].clone();
+    lnx = normals[bestEdge].x;
+    lny = normals[bestEdge].y;
     depth = radius - bestSep;
-    // Project circle center onto edge
     const t = u / edgeLenSq;
-    localContact = Vec2.add(v1.clone(), edge.clone().scale(t));
+    lcx = v1.x + edgeX * t;
+    lcy = v1.y + edgeY * t;
     featureId = bestEdge;
   }
 
   // Transform back to world space
-  const worldContact = Vec2.add(
-    polyBody.position,
-    rotPoly.mulVec2(Vec2.add(localContact, polygon.offset)),
-  );
-  // The local normal points outward from polygon; we want normal from circle toward polygon
-  const worldNormal = rotPoly.mulVec2(localNormal).negate();
+  const wcx = polyBody.position.x + (cosP * (lcx + pox) - sinP * (lcy + poy));
+  const wcy = polyBody.position.y + (sinP * (lcx + pox) + cosP * (lcy + poy));
+  // Normal from circle toward polygon: negate polygon's local outward normal
+  const wnx = -(cosP * lnx - sinP * lny);
+  const wny = -(sinP * lnx + cosP * lny);
 
   const materials = mixMaterials(circleBody.shape, polyBody.shape);
 
   return {
     bodyA: circleBody,
     bodyB: polyBody,
-    normal: worldNormal,
-    contacts: [{ point: worldContact, depth, id: featureId, normalImpulse: 0, tangentImpulse: 0 }],
+    normal: new Vec2(wnx, wny),
+    contacts: [{ point: new Vec2(wcx, wcy), depth, id: featureId, normalImpulse: 0, tangentImpulse: 0 }],
     friction: materials.friction,
     restitution: materials.restitution,
     isSensor: circleBody.isSensor || polyBody.isSensor,

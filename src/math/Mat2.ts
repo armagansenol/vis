@@ -59,6 +59,18 @@ export class Mat2 {
   }
 
   /**
+   * Multiply this matrix by a Vec2, writing the result into `out`.
+   * Returns `out` for chaining. Avoids allocation on hot paths.
+   */
+  mulVec2Into(v: Vec2, out: Vec2): Vec2 {
+    const x = this.m00 * v.x + this.m01 * v.y;
+    const y = this.m10 * v.x + this.m11 * v.y;
+    out.x = x;
+    out.y = y;
+    return out;
+  }
+
+  /**
    * Transpose this matrix in place. For a rotation matrix the transpose
    * is the inverse rotation. Returns this.
    */

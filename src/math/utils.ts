@@ -36,3 +36,16 @@ export function radToDeg(rad: number): number {
 export function randomRange(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
+
+/**
+ * Shortest-path angular interpolation.
+ * Handles wraparound so that interpolation always takes the short way
+ * around the circle (e.g. from 350 deg to 10 deg goes through 0,
+ * not backward through 180).
+ */
+export function lerpAngle(a: number, b: number, t: number): number {
+  let diff = b - a;
+  // Wrap diff into [-PI, PI]
+  diff = diff - Math.round(diff / (2 * Math.PI)) * 2 * Math.PI;
+  return a + diff * t;
+}

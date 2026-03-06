@@ -1,4 +1,5 @@
 export { shouldCollide } from './CollisionFilter.js';
+export { type Broadphase } from './Broadphase.js';
 export { SpatialHash } from './SpatialHash.js';
 export { polygonVsPolygon } from './sat.js';
 export {
@@ -17,3 +18,4 @@ export {
   CollisionSystem,
   type CollisionSystemOptions,
 } from './CollisionSystem.js';
+export { computeTOI, type TOIResult } from './ccd.js';

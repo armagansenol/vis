@@ -202,20 +202,28 @@ export class Polygon implements Shape {
   // ---------------------------------------------------------------------------
 
   computeAABB(position: Vec2, angle: number): AABB {
-    const rot = Mat2.fromAngle(angle);
+    // Inline rotation to avoid Mat2 + per-vertex Vec2 allocations
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const ox = this.offset.x;
+    const oy = this.offset.y;
+    const px = position.x;
+    const py = position.y;
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
 
-    for (const v of this.vertices) {
-      // Transform vertex: position + rot * (vertex + offset)
-      const local = Vec2.add(v, this.offset);
-      const world = rot.mulVec2(local).add(position);
-      if (world.x < minX) minX = world.x;
-      if (world.y < minY) minY = world.y;
-      if (world.x > maxX) maxX = world.x;
-      if (world.y > maxY) maxY = world.y;
+    const verts = this.vertices;
+    for (let i = 0; i < verts.length; i++) {
+      const lx = verts[i].x + ox;
+      const ly = verts[i].y + oy;
+      const wx = px + (cos * lx - sin * ly);
+      const wy = py + (sin * lx + cos * ly);
+      if (wx < minX) minX = wx;
+      if (wy < minY) minY = wy;
+      if (wx > maxX) maxX = wx;
+      if (wy > maxY) maxY = wy;
     }
 
     return new AABB(new Vec2(minX, minY), new Vec2(maxX, maxY));
